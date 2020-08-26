@@ -8,18 +8,19 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 */
 
-#define _START_FINISH_BYTE      0xA0
-#define _START_MESSAGE          0xA1
-#define _FINISH_MESSAGE         0xA2
+#define _START_FINISH_BYTE                    0xA0
+#define _START_MESSAGE_EXEC_ON_SUCCESS_HASH   0xA1
+#define _START_MESSAGE_EXEC_IMMEDIATELY       0xA2
+#define _FINISH_MESSAGE                       0xA3
 
-#define _DATA_SIZE              0xA3
+#define _DATA_SIZE                            0xA4
 
-#define _0_PIN_COMMAND          0x01
-#define _0_1_SET_MODE           0x01
-#define _0_2_DIGITAL_READ       0x02
-#define _0_3_DIGITAL_WRITE      0x03
-#define _0_4_ANALOG_READ        0x04
-#define _0_5_ANALOG_WRITE       0x05
+#define _0_PIN_COMMAND                        0x01
+#define _0_1_SET_MODE                         0x01
+#define _0_2_DIGITAL_READ                     0x02
+#define _0_3_DIGITAL_WRITE                    0x03
+#define _0_4_ANALOG_READ                      0x04
+#define _0_5_ANALOG_WRITE                     0x05
 
 
 /*
@@ -66,8 +67,11 @@ void loop() {
           case _START_FINISH_BYTE:
             Serial.println("_START_FINISH_BYTE");
             return;
-          case _START_MESSAGE:
-            Serial.println("_START_MESSAGE");
+          case _START_MESSAGE_EXEC_ON_SUCCESS_HASH:
+            Serial.println("_START_MESSAGE_EXEC_ON_SUCCESS_HASH");
+            return;
+          case _START_MESSAGE_EXEC_IMMEDIATELY:
+            Serial.println("_START_MESSAGE_EXEC_IMMEDIATELY");
             return;
           case _FINISH_MESSAGE:
             Serial.println("_FINISH_MESSAGE");
@@ -87,4 +91,5 @@ void loop() {
         return;
     }
   }
+
 }
