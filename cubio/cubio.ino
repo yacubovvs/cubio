@@ -8,44 +8,19 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 */
 
-#define _START_FINISH_BYTE                    0xA0
-#define _START_MESSAGE_EXEC_ON_SUCCESS_HASH   0xA1
-#define _START_MESSAGE_EXEC_IMMEDIATELY       0xA2
-#define _FINISH_MESSAGE                       0xA3
+#define _BOARD_STARTED                        0xB0
 
-#define _DATA_SIZE                            0xA4
+#define _0_SET_PIN_MODE_INPUT                 0xE0
+#define _1_SET_PIN_MODE_INPUT_PULLUP          0xE1
+#define _2_SET_PIN_MODE_OUTPUT                0xE2
 
-#define _0_PIN_COMMAND                        0x01
-#define _0_1_SET_MODE                         0x01
-#define _0_2_DIGITAL_READ                     0x02
-#define _0_3_DIGITAL_WRITE                    0x03
-#define _0_4_ANALOG_READ                      0x04
-#define _0_5_ANALOG_WRITE                     0x05
+#define _0_DIGITAL_READ                       0xF2
+#define _1_DIGITAL_WRITE                      0xF3
+#define _2_ANALOG_READ                        0xF4
+#define _3_ANALOG_WRITE                       0xF5
 
+#define _0_ERROR_UNKNOWN_COMMAND              0x10
 
-/*
-*********************************************************
-                   SERIAL PORT MESSAGE                   
-*********************************************************
-
-_START_FINISH_BYTE
-_START_FINISH_BYTE
-_START_FINISH_BYTE
-_START_MESSAGE
-_DATA_SIZE      
-0x01            // Length of message in next 1 byte
-0xFF            // Length of message 255 bytes
-
--- data --
-
-_START_FINISH_BYTE
-_START_FINISH_BYTE
-_FINISH_MESSAGE
-0xFF            // HASH amount byte #1
-0x01            // HASH amount byte #2
-_FINISH_MESSAGE
-
-*/
 
 byte current_command_tree[8];
 byte current_command_position = 0;
@@ -55,41 +30,58 @@ int current_byte;
 
 void setup(){
   Serial.begin(115200);
+  sendMessage(_BOARD_STARTED);
 }
 
-void loop() {
-  if (Serial.available() > 0) {  //если есть доступные данные
-    current_command_tree[current_command_position] = Serial.read();
-    
-    switch(current_command_position){
-      case 0:
-        switch (current_command_tree[current_command_position]){
-          case _START_FINISH_BYTE:
-            Serial.println("_START_FINISH_BYTE");
-            return;
-          case _START_MESSAGE_EXEC_ON_SUCCESS_HASH:
-            Serial.println("_START_MESSAGE_EXEC_ON_SUCCESS_HASH");
-            return;
-          case _START_MESSAGE_EXEC_IMMEDIATELY:
-            Serial.println("_START_MESSAGE_EXEC_IMMEDIATELY");
-            return;
-          case _FINISH_MESSAGE:
-            Serial.println("_FINISH_MESSAGE");
-            return;
-          case _DATA_SIZE:
-            Serial.println("_DATA_SIZE");
-            return;
-        }
-      case 1:
-      case 2:
-      case 3:
-      case 4:
-      case 5:
-      case 6:
-      case 7:
-      default:
-        return;
-    }
+void sendMessage(byte message[]){
+  for(int i=0; i<sizeof(message)/sizeof(message[0]); i++){
+    Serial.print((char)message[i]);
   }
+}
 
+void sendMessage(byte message){
+  Serial.print((char)message);
+}
+
+
+boolean isSerialAvailable(){
+  return Serial.available() > 0;
+}
+
+
+byte serialRead(){
+  while (!isSerialAvailable()){}
+  return Serial.read();
+}
+
+
+void loop() {
+  switch(serialRead()){
+    case _0_SET_PIN_MODE_INPUT):
+      pinMode(serialRead(), INPUT);
+      break;
+    case _1_SET_PIN_MODE_INPUT_PULLUP:
+      pinMode(serialRead(), INPUT_PULLUP);
+      break;
+    case _2_SET_PIN_MODE_OUTPUT:
+      pinMode(serialRead(), OUTPUT);
+      break;
+
+    case _0_DIGITAL_READ:
+      break;
+    case _1_DIGITAL_WRITE:
+      digitalWrite(serialRead(), serialRead());
+      break;
+    
+    case _2_ANALOG_READ:
+      break;
+    
+    case _3_ANALOG_WRITE:
+      break;
+    
+    default:
+      sendMessage(_0_ERROR_UNKNOWN_COMMAND);
+      break:
+      
+  }
 }
