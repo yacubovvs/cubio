@@ -56,21 +56,33 @@ byte serialRead(){
 
 
 void loop() {
+  byte pin, value;
+  
   switch(serialRead()){
-    case _0_SET_PIN_MODE_INPUT):
+    case _0_SET_PIN_MODE_INPUT:
       pinMode(serialRead(), INPUT);
       break;
     case _1_SET_PIN_MODE_INPUT_PULLUP:
       pinMode(serialRead(), INPUT_PULLUP);
       break;
     case _2_SET_PIN_MODE_OUTPUT:
-      pinMode(serialRead(), OUTPUT);
+      pin = serialRead();
+      pinMode(pin, OUTPUT);
       break;
 
     case _0_DIGITAL_READ:
+      pin = serialRead();
+      sendMessage((byte)_0_DIGITAL_READ);
+      sendMessage((byte)pin);
+      if(digitalRead(pin)) sendMessage(0x01);
+      //if(digitalRead(12)) sendMessage(0x01);
+      else sendMessage((byte)0x00);
       break;
     case _1_DIGITAL_WRITE:
-      digitalWrite(serialRead(), serialRead());
+      pin = serialRead();
+      value = serialRead();
+      
+      digitalWrite(pin, value);
       break;
     
     case _2_ANALOG_READ:
@@ -81,7 +93,7 @@ void loop() {
     
     default:
       sendMessage(_0_ERROR_UNKNOWN_COMMAND);
-      break:
+      break;
       
   }
 }

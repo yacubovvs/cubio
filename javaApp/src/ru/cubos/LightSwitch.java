@@ -1,29 +1,40 @@
 package ru.cubos;
 
-import jssc.SerialPortException;
-
-import static ru.cubos.Protocol.*;
+import static ru.cubos.SerialConnector.PinLevels.*;
+import static ru.cubos.SerialConnector.PinModes.*;
 
 public class LightSwitch extends SerialConnector {
 
     @Override
     protected void onBoardStart(){
-        System.out.println("OnBoardStart");
+        System.out.println("On board start");
+        pinMode(3, OUTPUT);
+        pinMode(5, OUTPUT);
+        pinMode(6, OUTPUT);
 
-        byte data[] = new byte[]{
-                _2_SET_PIN_MODE_OUTPUT,
-                0x03, // D3
+        pinMode(12, INPUT_PULLUP);
+        pinMode(11, INPUT_PULLUP);
+        pinMode(10, INPUT);
 
-                _1_DIGITAL_WRITE,
-                0x03, // D3
-                0x01, // HIGH
-        };
+        while(true) {
+            if(!digitalRead(12)) digitalWrite(6, HIGH);
+            else digitalWrite(6, LOW);
 
-        try {
-            serialPort.writeBytes(data);
-        } catch (SerialPortException e) {
-            e.printStackTrace();
+            if(!digitalRead(11)) digitalWrite(5, HIGH);
+            else digitalWrite(5, LOW);
+
+            if(digitalRead(10)) digitalWrite(3, HIGH);
+            else digitalWrite(3, LOW);
+
+            delay(10);
         }
+
+
+    }
+
+    @Override
+    void onError(Error error){
+        System.out.println("Error: " + error.name());
     }
 
 }
