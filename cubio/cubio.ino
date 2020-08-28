@@ -89,6 +89,10 @@ void loop() {
       break;
     
     case _3_ANALOG_WRITE:
+      pin = serialRead();
+      value = serialRead();
+      
+      analogWrite(pin, value);
       break;
     
     default:

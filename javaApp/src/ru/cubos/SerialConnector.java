@@ -94,6 +94,8 @@ public class SerialConnector extends Decoder{
             onConnectError(e);
         }
 
+        long timer = System.currentTimeMillis();
+        final int timeout = 100;
         while(true){
             if(resultWaiter.get(pin)!=null){
                 int result = resultWaiter.get(pin);
@@ -106,6 +108,11 @@ public class SerialConnector extends Decoder{
                 Thread.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            }
+
+            if(System.currentTimeMillis() - timer>timeout){
+                onError(Error.NO_READ_ANSWER);
+                return false;
             }
         }
     }
@@ -126,6 +133,21 @@ public class SerialConnector extends Decoder{
                 _1_DIGITAL_WRITE,
                 (byte)pin,
                 level,
+        };
+
+        try {
+            serialPort.writeBytes(data);
+        } catch (SerialPortException e) {
+            e.printStackTrace();
+            onConnectError(e);
+        }
+    }
+
+    void analogWrite(int pin,  int pinLevel){
+        byte data[] = new byte[]{
+                _3_ANALOG_WRITE,
+                (byte)pin,
+                (byte)pinLevel,
         };
 
         try {

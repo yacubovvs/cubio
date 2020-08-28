@@ -17,6 +17,7 @@ public class Decoder {
                     thread.start();
                     break;
                 case _0_DIGITAL_READ:
+                    if(data.length-i<2) return false;
                     byte pin = data[i+1];
                     byte value = data[i+2];
                     digitaReadReply(pin, value);

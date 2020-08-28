@@ -1,5 +1,8 @@
 package ru.cubos;
 
+import jssc.SerialPortException;
+
+import static ru.cubos.Protocol._3_ANALOG_WRITE;
 import static ru.cubos.SerialConnector.PinLevels.*;
 import static ru.cubos.SerialConnector.PinModes.*;
 
@@ -8,6 +11,16 @@ public class LightSwitch extends SerialConnector {
     @Override
     protected void onBoardStart(){
         System.out.println("On board start");
+        pinMode(3, OUTPUT);
+        pinMode(5, OUTPUT);
+        pinMode(6, OUTPUT);
+
+        analogWrite(3, 2);
+        analogWrite(5, 16);
+        analogWrite(6, 255);
+
+        //analogWrite(3, 0);
+        /*
         pinMode(3, OUTPUT);
         pinMode(5, OUTPUT);
         pinMode(6, OUTPUT);
@@ -28,6 +41,7 @@ public class LightSwitch extends SerialConnector {
 
             delay(10);
         }
+        */
 
 
     }
