@@ -4,6 +4,7 @@ public class Protocol {
     public static final byte _0_ERROR_UNKNOWN_COMMAND              = (byte)0x10;
 
     public static final byte _BOARD_STARTED                        = (byte)0xB0;
+    public static final byte _BOARD_RESET                          = (byte)0xB1;
 
     public static final byte _0_SET_PIN_MODE_INPUT                 = (byte)0xE0;
     public static final byte _1_SET_PIN_MODE_INPUT_PULLUP          = (byte)0xE1;
