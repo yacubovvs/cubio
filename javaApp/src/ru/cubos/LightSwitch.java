@@ -15,9 +15,33 @@ public class LightSwitch extends SerialConnector {
         pinMode(5, OUTPUT);
         pinMode(6, OUTPUT);
 
-        analogWrite(3, 2);
-        analogWrite(5, 16);
-        analogWrite(6, 255);
+        digitalWrite(3, 0);
+        digitalWrite(5, 0);
+        digitalWrite(6, 0);
+
+        pinMode(11, INPUT_PULLUP);
+        pinMode(12, INPUT_PULLUP);
+        pinMode(10, INPUT);
+
+        setPinInterrupt(11);
+        setPinInterrupt(10);
+        setPinInterrupt(12);
+
+
+        delay(2000);
+
+        while(true) {
+            digitalWrite(6, 1);
+            delay(1000);
+            digitalWrite(6, 0);
+            digitalWrite(5, 1);
+            delay(1000);
+            digitalWrite(5, 0);
+            digitalWrite(3, 1);
+            delay(1000);
+            digitalWrite(3, 0);
+        }
+
 
         //analogWrite(3, 0);
         /*
@@ -49,6 +73,11 @@ public class LightSwitch extends SerialConnector {
     @Override
     void onError(Error error){
         System.out.println("Error: " + error.name());
+    }
+
+    @Override
+    protected void digitalInterruptReply(byte pin, byte value){
+        System.out.println("Digital interrupt pin " + pin + " - " + value);
     }
 
 }

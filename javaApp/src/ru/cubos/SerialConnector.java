@@ -14,7 +14,7 @@ public class SerialConnector extends Decoder{
     HashMap<Integer, Integer> resultWaiter = new HashMap<>();
 
     @Override
-    protected void digitaReadReply(byte pin, byte value){
+    protected void digitalReadReply(byte pin, byte value){
         //System.out.println("digitaReadReply " + pin + " - " + value);
         resultWaiter.put((int)pin, (int)value);
     }
@@ -133,6 +133,47 @@ public class SerialConnector extends Decoder{
                 _1_DIGITAL_WRITE,
                 (byte)pin,
                 level,
+        };
+
+        try {
+            serialPort.writeBytes(data);
+        } catch (SerialPortException e) {
+            e.printStackTrace();
+            onConnectError(e);
+        }
+    }
+
+    void setPinInterrupt(int pin){
+        byte data[] = new byte[]{
+                _3_SET_PIN_INTERRUPT,
+                (byte) pin
+        };
+
+        try {
+            serialPort.writeBytes(data);
+        } catch (SerialPortException e) {
+            e.printStackTrace();
+            onConnectError(e);
+        }
+    }
+
+    void clearPinInterrupt(int pin){
+        byte data[] = new byte[]{
+                _4_CLEAR_PIN_INTERRUPT,
+                (byte) pin
+        };
+
+        try {
+            serialPort.writeBytes(data);
+        } catch (SerialPortException e) {
+            e.printStackTrace();
+            onConnectError(e);
+        }
+    }
+
+    void reset(){
+        byte data[] = new byte[]{
+                _BOARD_RESET
         };
 
         try {

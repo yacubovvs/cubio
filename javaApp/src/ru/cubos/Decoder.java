@@ -9,6 +9,7 @@ public class Decoder {
     long command_summ = 0;
 
     public boolean decode(byte data[]){
+        byte pin, value;
 
         for(int i=0; i<data.length; i++) {
             switch (data[i]) {
@@ -18,13 +19,23 @@ public class Decoder {
                     break;
                 case _0_DIGITAL_READ:
                     if(data.length-i<2) return false;
-                    byte pin = data[i+1];
-                    byte value = data[i+2];
-                    digitaReadReply(pin, value);
+                    pin = data[i+1];
+                    value = data[i+2];
+                    digitalReadReply(pin, value);
+                    i+=2;
+                    break;
+                case _4_PIN_INTERRUPT:
+                    if(data.length-i<2) return false;
+                    pin = data[i+1];
+                    value = data[i+2];
+                    digitalInterruptReply(pin, value);
                     i+=2;
                     break;
                 case _0_ERROR_UNKNOWN_COMMAND:
-                    onErrorUnknowCommandOnBoard();
+                    if(data.length-i<1) return false;
+                    value = data[i+1];
+                    onErrorUnknownCommandOnBoard(value);
+                    i+=2;
                     break;
                 default:
                     decode_unknownOperation();
@@ -39,15 +50,19 @@ public class Decoder {
         System.out.println("decode_unknownOperation");
     }
 
-    protected void onErrorUnknowCommandOnBoard(){
-        System.out.println("onErrorUnknowCommandOnBoard");
+    protected void onErrorUnknownCommandOnBoard(byte value){
+        System.out.println("onErrorUnknowCommandOnBoard " + (int)value);
     }
 
     protected void onBoardStart(){
         System.out.println("onBoardStart");
     }
 
-    protected void digitaReadReply(byte pin, byte value){
+    protected void digitalReadReply(byte pin, byte value){
         System.out.println("digitaReadReply " + pin + " - " + value);
+    }
+
+    protected void digitalInterruptReply(byte pin, byte value){
+        System.out.println("digitaInterruptReply " + pin + " - " + value);
     }
 }

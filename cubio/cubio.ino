@@ -9,28 +9,60 @@
 */
 
 #define _BOARD_STARTED                        0xB0
+#define _BOARD_RESET                          0xB1
 
 #define _0_SET_PIN_MODE_INPUT                 0xE0
 #define _1_SET_PIN_MODE_INPUT_PULLUP          0xE1
 #define _2_SET_PIN_MODE_OUTPUT                0xE2
+#define _3_SET_PIN_INTERRUPT                  0xE3
+#define _4_CLEAR_PIN_INTERRUPT                0xE4
+
 
 #define _0_DIGITAL_READ                       0xF2
 #define _1_DIGITAL_WRITE                      0xF3
 #define _2_ANALOG_READ                        0xF4
 #define _3_ANALOG_WRITE                       0xF5
+#define _4_PIN_INTERRUPT                      0xF6
 
 #define _0_ERROR_UNKNOWN_COMMAND              0x10
 
 
-byte current_command_tree[8];
+#define digitalInteruptsTimeout     10
+#define digitalInterruptsLength     13    // D0-D13
+boolean digitalInterrupt[digitalInterruptsLength*2]; 
+
 byte current_command_position = 0;
 long command_summ = 0;
 
 int current_byte;
 
 void setup(){
+  for(byte i=0; i<digitalInterruptsLength; i++){
+    digitalInterrupt[i*2] = false;
+    digitalInterrupt[i*2+1] = false;
+  }
+  
   Serial.begin(115200);
   sendMessage(_BOARD_STARTED);
+}
+
+long lastCheckDigitalInterrupt;
+void checkInerrupts(){
+  if(abs(millis() - lastCheckDigitalInterrupt)>digitalInteruptsTimeout){
+    lastCheckDigitalInterrupt = millis();
+
+    for(byte i=0; i<digitalInterruptsLength; i++){
+      if(digitalInterrupt[i*2]==true){
+        boolean digitalValue = digitalRead(i);
+        if(digitalValue!=digitalInterrupt[i*2 + 1]){
+          digitalInterrupt[i*2 + 1] = digitalValue;
+          sendMessage((byte)_4_PIN_INTERRUPT);
+          sendMessage((byte)i);
+          sendMessage((byte)digitalValue);       
+        } 
+      }
+    }  
+  }
 }
 
 void sendMessage(byte message[]){
@@ -50,15 +82,21 @@ boolean isSerialAvailable(){
 
 
 byte serialRead(){
-  while (!isSerialAvailable()){}
+  while (!isSerialAvailable()){
+    checkInerrupts();
+  }
   return Serial.read();
 }
 
+void(* resetFunc) (void) = 0;
 
 void loop() {
   byte pin, value;
-  
-  switch(serialRead()){
+  byte currentCommand = serialRead();
+  switch(currentCommand){
+    case _BOARD_RESET:
+      resetFunc();
+      break;
     case _0_SET_PIN_MODE_INPUT:
       pinMode(serialRead(), INPUT);
       break;
@@ -69,13 +107,20 @@ void loop() {
       pin = serialRead();
       pinMode(pin, OUTPUT);
       break;
-
+    case _3_SET_PIN_INTERRUPT:
+      pin = serialRead();
+      digitalInterrupt[pin*2] = true;
+      digitalInterrupt[pin*2+1] = digitalRead(pin);
+      break;
+    case _4_CLEAR_PIN_INTERRUPT:
+      pin = serialRead();
+      digitalInterrupt[pin*2] = false;
+      break;
     case _0_DIGITAL_READ:
       pin = serialRead();
       sendMessage((byte)_0_DIGITAL_READ);
       sendMessage((byte)pin);
       if(digitalRead(pin)) sendMessage(0x01);
-      //if(digitalRead(12)) sendMessage(0x01);
       else sendMessage((byte)0x00);
       break;
     case _1_DIGITAL_WRITE:
@@ -97,6 +142,7 @@ void loop() {
     
     default:
       sendMessage(_0_ERROR_UNKNOWN_COMMAND);
+      sendMessage(currentCommand);
       break;
       
   }
