@@ -11,6 +11,14 @@ public class LightSwitch extends SerialConnector {
     @Override
     protected void onBoardStart(){
         System.out.println("On board start");
+        pinMode(14, INPUT);
+        while(true) {
+            System.out.println("Analog value: " + analogRead(14));
+            analogRead(14);
+            delay(1000);
+        }
+
+        /*
         pinMode(3, OUTPUT);
         pinMode(5, OUTPUT);
         pinMode(6, OUTPUT);
@@ -41,6 +49,7 @@ public class LightSwitch extends SerialConnector {
             delay(1000);
             digitalWrite(3, 0);
         }
+         */
 
 
         //analogWrite(3, 0);

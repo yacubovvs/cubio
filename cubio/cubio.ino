@@ -28,7 +28,7 @@
 
 
 #define digitalInteruptsTimeout     10
-#define digitalInterruptsLength     13    // D0-D13
+#define digitalInterruptsLength     21    // D0-D13 + A0-A7
 boolean digitalInterrupt[digitalInterruptsLength*2]; 
 
 byte current_command_position = 0;
@@ -97,25 +97,31 @@ void loop() {
     case _BOARD_RESET:
       resetFunc();
       break;
+      
     case _0_SET_PIN_MODE_INPUT:
       pinMode(serialRead(), INPUT);
       break;
+      
     case _1_SET_PIN_MODE_INPUT_PULLUP:
       pinMode(serialRead(), INPUT_PULLUP);
       break;
+      
     case _2_SET_PIN_MODE_OUTPUT:
       pin = serialRead();
       pinMode(pin, OUTPUT);
       break;
+      
     case _3_SET_PIN_INTERRUPT:
       pin = serialRead();
       digitalInterrupt[pin*2] = true;
       digitalInterrupt[pin*2+1] = digitalRead(pin);
       break;
+      
     case _4_CLEAR_PIN_INTERRUPT:
       pin = serialRead();
       digitalInterrupt[pin*2] = false;
       break;
+      
     case _0_DIGITAL_READ:
       pin = serialRead();
       sendMessage((byte)_0_DIGITAL_READ);
@@ -123,20 +129,26 @@ void loop() {
       if(digitalRead(pin)) sendMessage(0x01);
       else sendMessage((byte)0x00);
       break;
+      
     case _1_DIGITAL_WRITE:
       pin = serialRead();
       value = serialRead();
-      
       digitalWrite(pin, value);
       break;
     
     case _2_ANALOG_READ:
+      pin = serialRead();
+      int value = analogRead(pin);
+      sendMessage((byte)_2_ANALOG_READ);
+      sendMessage((byte)pin);
+
+      sendMessage(value&0x000000FF);
+      sendMessage((value&0x0000FF00)>>8);
       break;
     
     case _3_ANALOG_WRITE:
       pin = serialRead();
       value = serialRead();
-      
       analogWrite(pin, value);
       break;
     

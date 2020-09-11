@@ -15,7 +15,11 @@ public class SerialConnector extends Decoder{
 
     @Override
     protected void digitalReadReply(byte pin, byte value){
-        //System.out.println("digitaReadReply " + pin + " - " + value);
+        resultWaiter.put((int)pin, (int)value);
+    }
+
+    @Override
+    protected void analogReadReply(byte pin, int value){
         resultWaiter.put((int)pin, (int)value);
     }
 
@@ -113,6 +117,45 @@ public class SerialConnector extends Decoder{
             if(System.currentTimeMillis() - timer>timeout){
                 onError(Error.NO_READ_ANSWER);
                 return false;
+            }
+        }
+    }
+
+    int analogRead(int pin){
+        byte data[] = new byte[]{
+                _2_ANALOG_READ,
+                (byte)pin
+        };
+
+        resultWaiter.remove(pin);
+
+        try {
+            serialPort.writeBytes(data);
+        } catch (SerialPortException e) {
+            e.printStackTrace();
+            onConnectError(e);
+        }
+
+        long timer = System.currentTimeMillis();
+        final int timeout = 100;
+        while(true){
+            if(resultWaiter.get(pin)!=null){
+                int result = resultWaiter.get(pin);
+                resultWaiter.remove(pin);
+                return result;
+                //if(result<1)return false;
+                //else return true;
+            }
+
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            if(System.currentTimeMillis() - timer>timeout){
+                onError(Error.NO_READ_ANSWER);
+                return -1;
             }
         }
     }

@@ -9,7 +9,7 @@ public class Decoder {
     long command_summ = 0;
 
     public boolean decode(byte data[]){
-        byte pin, value;
+        byte pin, value, value2;
 
         for(int i=0; i<data.length; i++) {
             switch (data[i]) {
@@ -23,6 +23,15 @@ public class Decoder {
                     value = data[i+2];
                     digitalReadReply(pin, value);
                     i+=2;
+                    break;
+                case _2_ANALOG_READ:
+                    if(data.length-i<3) return false;
+                    pin = data[i+1];
+                    value = data[i+2];
+                    value2 = data[i+3];
+
+                    analogReadReply(pin, (Byte.toUnsignedInt(value2)<<8) + Byte.toUnsignedInt(value));
+                    i+=3;
                     break;
                 case _4_PIN_INTERRUPT:
                     if(data.length-i<2) return false;
@@ -56,6 +65,10 @@ public class Decoder {
 
     protected void onBoardStart(){
         System.out.println("onBoardStart");
+    }
+
+    protected void analogReadReply(byte pin, int value){
+        System.out.println("analogReadReply " + pin + " - " + value);
     }
 
     protected void digitalReadReply(byte pin, byte value){
