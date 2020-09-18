@@ -11,10 +11,12 @@ public class LightSwitch extends SerialConnector {
     @Override
     protected void onBoardStart(){
         System.out.println("On board start");
-        pinMode(14, INPUT);
+        pinMode(9, INPUT_PULLUP);
+        pinMode(8, INPUT_PULLUP);
         while(true) {
-            System.out.println("Analog value: " + analogRead(14));
-            analogRead(14);
+
+            if(digitalRead(9)) System.out.println("9 PIN!");
+            if(digitalRead(8)) System.out.println("8 PIN!");
             delay(1000);
         }
 

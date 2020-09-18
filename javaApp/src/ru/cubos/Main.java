@@ -12,8 +12,8 @@ public class Main {
         //serialPort = new SerialPort("COM11");
         //serialPort = new SerialPort("//dev//cu.usbserial-1420");
         LightSwitch lightSwitch = new LightSwitch();
-        lightSwitch.setPort("COM11");
-        //lightSwitch.setPort("//dev//cu.usbserial-1420");
+        //lightSwitch.setPort("COM11");
+        lightSwitch.setPort("//dev//cu.usbserial-1420");
 
         try {
             lightSwitch.connect();
