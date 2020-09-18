@@ -91,6 +91,21 @@ byte serialRead(){
 void(* resetFunc) (void) = 0;
 
 void loop() {
+  //Serial.print("Test");
+  for(int i=0; i<255; i++) Serial.print((char)i);
+  while(true){}
+  /*
+  pinMode(12, INPUT_PULLUP);
+  //for(byte i=0; i<128; i++) sendMessage((char)i);\
+
+  while(true){
+    if(!digitalRead(12)) {
+      for(byte i=0; i<128; i++) sendMessage((char)i);
+      delay(200);  
+    }
+     
+  }*/
+  return;
   byte pin, value;
   byte currentCommand = serialRead();
   switch(currentCommand){
