@@ -2,6 +2,9 @@ package ru.cubos;
 
 import jssc.SerialPortException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static ru.cubos.Protocol._3_ANALOG_WRITE;
 import static ru.cubos.SerialConnector.PinLevels.*;
 import static ru.cubos.SerialConnector.PinModes.*;
@@ -11,14 +14,10 @@ public class LightSwitch extends SerialConnector {
     @Override
     protected void onBoardStart(){
         System.out.println("On board start");
-        pinMode(9, INPUT_PULLUP);
-        pinMode(8, INPUT_PULLUP);
-        while(true) {
+        pinMode(10, OUTPUT);
+        digitalWrite(10, HIGH);
+        reset();
 
-            if(digitalRead(9)) System.out.println("9 PIN!");
-            if(digitalRead(8)) System.out.println("8 PIN!");
-            delay(1000);
-        }
 
         /*
         pinMode(3, OUTPUT);
@@ -87,7 +86,7 @@ public class LightSwitch extends SerialConnector {
     }
 
     @Override
-    protected void digitalInterruptReply(byte pin, byte value){
+    protected void digitalInterruptReply(int pin, int value){
         System.out.println("Digital interrupt pin " + pin + " - " + value);
     }
 

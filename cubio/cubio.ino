@@ -14,13 +14,13 @@
 #define _0_SET_PIN_MODE_INPUT                 "i"
 #define _1_SET_PIN_MODE_INPUT_PULLUP          "p"
 #define _2_SET_PIN_MODE_OUTPUT                "o"
-#define _3_SET_PIN_INTERRUPT                  "r"
+#define _3_SET_PIN_INTERRUPT                  "R"
 #define _4_CLEAR_PIN_INTERRUPT                "c"
 
 
 #define _0_DIGITAL_READ                       "r"
 #define _1_DIGITAL_WRITE                      "w"
-#define _2_ANALOG_READ                        "R"
+#define _2_ANALOG_READ                        "A"
 #define _3_ANALOG_WRITE                       "W"
 #define _4_PIN_INTERRUPT                      "I"
 
@@ -43,7 +43,15 @@ void setup(){
   }
   
   Serial.begin(115200);
-  Serial.println(_BOARD_STARTED);
+  write(_BOARD_STARTED);
+}
+
+void write(String string){
+  Serial.print(string + " ");
+}
+void write(int string){
+  Serial.print(string);
+  Serial.print(" ");
 }
 
 long lastCheckDigitalInterrupt;
@@ -56,17 +64,13 @@ void checkInerrupts(){
         boolean digitalValue = digitalRead(i);
         if(digitalValue!=digitalInterrupt[i*2 + 1]){
           digitalInterrupt[i*2 + 1] = digitalValue;
-          //sendMessage((byte)_4_PIN_INTERRUPT);
-          //sendMessage((byte)i);
-          //sendMessage((byte)digitalValue);       
+          write(_4_PIN_INTERRUPT);
+          write((int)i);
+          write((int)digitalValue);       
         } 
       }
     }  
   }
-}
-
-void write(String string){
-  Serial.print(string + " ");
 }
 
 String readString(){
@@ -77,7 +81,6 @@ String readString(){
         charReadValue = Serial.read();
         if(charReadValue==32) break;
         command += (char)charReadValue;
-        //Serial.print((int)charReadValue);
      }else{
        checkInerrupts();
      }
@@ -88,61 +91,49 @@ String readString(){
   return command;
 }
 
+int readInt(){
+  return readString().toInt();
+}
+
 void(* resetFunc) (void) = 0;
 
 void loop() {
   String command = readString();
-  //Serial.println(command);
-  //byte pin, value;
-  //String currentCommand = readString();
 
   if(command==_BOARD_RESET){
       resetFunc();
   }else if(command==_0_SET_PIN_MODE_INPUT){
-      Serial.println("_0_SET_PIN_MODE_INPUT");
-      //pinMode(serialRead(), INPUT);
+      pinMode(readInt(), INPUT);
   }else if(command==_1_SET_PIN_MODE_INPUT_PULLUP){
-      Serial.println("_1_SET_PIN_MODE_INPUT_PULLUP");
-      //pinMode(serialRead(), INPUT_PULLUP);
+      pinMode(readInt(), INPUT_PULLUP);
   }else if(command==_2_SET_PIN_MODE_OUTPUT){
-      Serial.println("_2_SET_PIN_MODE_OUTPUT");
-      //pin = serialRead();
-      //pinMode(pin, OUTPUT);
+      pinMode(readInt(), OUTPUT);
   }else if(command==_3_SET_PIN_INTERRUPT){
-      Serial.println("_3_SET_PIN_INTERRUPT");
-      //pin = serialRead();
-      //digitalInterrupt[pin*2] = true;
-      //digitalInterrupt[pin*2+1] = digitalRead(pin);
+      int pin = readInt();
+      digitalInterrupt[pin*2] = true;
+      digitalInterrupt[pin*2+1] = digitalRead(pin);
   }else if(command==_4_CLEAR_PIN_INTERRUPT){
-      Serial.println("_4_CLEAR_PIN_INTERRUPT");
-      //pin = serialRead();
-      //digitalInterrupt[pin*2] = false;
+      int pin = readInt();
+      digitalInterrupt[pin*2] = false;
   }else if(command==_0_DIGITAL_READ){
-      Serial.println("_0_DIGITAL_READ");
-      //pin = serialRead();
-      //sendMessage((byte)_0_DIGITAL_READ);
-      //sendMessage((byte)pin);
-      //if(digitalRead(pin)) sendMessage(0x01);
-      //else sendMessage((byte)0x00);
+      int pin = readInt();
+      write(_0_DIGITAL_READ);
+      write(pin);
+      write((int)digitalRead(pin));
   }else if(command==_1_DIGITAL_WRITE){
-      Serial.println("_1_DIGITAL_WRITE");
-      //pin = serialRead();
-      //value = serialRead();
-      //digitalWrite(pin, value);
+      int pin = readInt();
+      int value = readInt();
+      digitalWrite(pin, value);
   }else if(command==_2_ANALOG_READ){
-      Serial.println("_2_ANALOG_READ");
-      //pin = serialRead();
-      //int value = analogRead(pin);
-      //sendMessage((byte)_2_ANALOG_READ);
-      //sendMessage((byte)pin);
-
-      //sendMessage(value&0x000000FF);
-      //sendMessage((value&0x0000FF00)>>8);
+      int pin = readInt();
+      int value = analogRead(pin);
+      write(_2_ANALOG_READ);
+      write(pin);
+      write(value);
   }else if(command==_3_ANALOG_WRITE){
-      Serial.println("_3_ANALOG_WRITE");
-      //pin = serialRead();
-      //value = serialRead();
-      //analogWrite(pin, value);
+      int pin = readInt();
+      int value = readInt();
+      analogWrite(pin, value);
   }else{
       write(_0_ERROR_UNKNOWN_COMMAND);
       write(command);

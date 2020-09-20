@@ -1,81 +1,104 @@
 package ru.cubos;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static ru.cubos.Protocol.*;
 
 public class Decoder {
 
-    byte current_command_tree[] = new byte[8];
-    byte current_command_position = 0;
-    long command_summ = 0;
+    protected List<Byte> receivedByteList = new ArrayList<>();
 
-    public boolean decode(byte data[]){
-        byte pin, value, value2;
+    public Decoder(){
+        Thread decoder = new Thread(() -> {
+            while(true) {
+                String s = readString();
 
-        for(int i=0; i<data.length; i++) {
-            switch (data[i]) {
-                case _BOARD_STARTED:
-                    Thread thread = new Thread(() -> onBoardStart());
-                    thread.start();
-                    break;
-                case _0_DIGITAL_READ:
-                    if(data.length-i<2) return false;
-                    pin = data[i+1];
-                    value = data[i+2];
-                    digitalReadReply(pin, value);
-                    i+=2;
-                    break;
-                case _2_ANALOG_READ:
-                    if(data.length-i<3) return false;
-                    pin = data[i+1];
-                    value = data[i+2];
-                    value2 = data[i+3];
+                if(s!=null){
+                    // Decoder
+                    if(s.equals(_BOARD_STARTED)){
+                        Thread thread = new Thread(() -> onBoardStart());
+                        thread.start();
+                    }else if(s.equals(_0_ERROR_UNKNOWN_COMMAND)){
+                        String value = readString();
+                        onErrorUnknownCommandOnBoard(value);
+                    }else if(s.equals(_0_DIGITAL_READ)){
+                        int pin = readInt();
+                        int value = readInt();
+                        digitalReadReply(pin, value);
+                    }else if(s.equals(_2_ANALOG_READ)) {
+                        int pin = readInt();
+                        int value = readInt();
+                        analogReadReply(pin, value);
+                    }else if(s.equals(_4_PIN_INTERRUPT)) {
+                        int pin = readInt();
+                        int value = readInt();
+                        digitalInterruptReply(pin, value);
+                    }else{
+                        decode_unknownOperation(s);
+                        break;
+                    }
 
-                    analogReadReply(pin, (Byte.toUnsignedInt(value2)<<8) + Byte.toUnsignedInt(value));
-                    i+=3;
-                    break;
-                case _4_PIN_INTERRUPT:
-                    if(data.length-i<2) return false;
-                    pin = data[i+1];
-                    value = data[i+2];
-                    digitalInterruptReply(pin, value);
-                    i+=2;
-                    break;
-                case _0_ERROR_UNKNOWN_COMMAND:
-                    if(data.length-i<1) return false;
-                    value = data[i+1];
-                    onErrorUnknownCommandOnBoard(value);
-                    i+=2;
-                    break;
-                default:
-                    decode_unknownOperation();
-                    break;
+
+                }else{
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
+        });
+
+        decoder.start();
+    }
+
+    int readInt(){
+        try {
+            int value = Integer.parseInt(readString());
+            return value;
+        }catch (Exception ex){
+            return -1;
         }
 
-        return true;
     }
 
-    protected void decode_unknownOperation(){
-        System.out.println("decode_unknownOperation");
+    String readString(){
+        String s = "";
+        while(true) {
+            if (receivedByteList.size() > 0) {
+                Byte b = receivedByteList.get(0);
+                char c = (char) (b.intValue());
+                receivedByteList.remove(0);
+                if(c==' ') return s;
+                s += c;
+            }else{
+                return null;
+            }
+        }
     }
 
-    protected void onErrorUnknownCommandOnBoard(byte value){
-        System.out.println("onErrorUnknowCommandOnBoard " + (int)value);
+    protected void decode_unknownOperation(String s){
+        System.out.println("decode_unknownOperation" + s);
+    }
+
+    protected void onErrorUnknownCommandOnBoard(String value){
+        System.out.println("onErrorUnknowCommandOnBoard " + value);
     }
 
     protected void onBoardStart(){
         System.out.println("onBoardStart");
     }
 
-    protected void analogReadReply(byte pin, int value){
+    protected void analogReadReply(int pin, int value){
         System.out.println("analogReadReply " + pin + " - " + value);
     }
 
-    protected void digitalReadReply(byte pin, byte value){
+    protected void digitalReadReply(int pin, int value){
         System.out.println("digitaReadReply " + pin + " - " + value);
     }
 
-    protected void digitalInterruptReply(byte pin, byte value){
+    protected void digitalInterruptReply(int pin, int value){
         System.out.println("digitaInterruptReply " + pin + " - " + value);
     }
 }

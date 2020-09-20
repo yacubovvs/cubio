@@ -1,21 +1,22 @@
 package ru.cubos;
 
 public class Protocol {
-    public static final byte _0_ERROR_UNKNOWN_COMMAND              = (byte)0x10;
+    public static final String _BOARD_STARTED                        = "s";
+    public static final String _BOARD_RESET                          = "t";
 
-    public static final byte _BOARD_STARTED                        = (byte)0xB0;
-    public static final byte _BOARD_RESET                          = (byte)0xB1;
+    public static final String _0_SET_PIN_MODE_INPUT                 = "i";
+    public static final String _1_SET_PIN_MODE_INPUT_PULLUP          = "p";
+    public static final String _2_SET_PIN_MODE_OUTPUT                = "o";
+    public static final String _3_SET_PIN_INTERRUPT                  = "R";
+    public static final String _4_CLEAR_PIN_INTERRUPT                = "c";
 
-    public static final byte _0_SET_PIN_MODE_INPUT                 = (byte)0xE0;
-    public static final byte _1_SET_PIN_MODE_INPUT_PULLUP          = (byte)0xE1;
-    public static final byte _2_SET_PIN_MODE_OUTPUT                = (byte)0xE2;
-    public static final byte _3_SET_PIN_INTERRUPT                  = (byte)0xE3;
-    public static final byte _4_CLEAR_PIN_INTERRUPT                = (byte)0xE4;
 
-    public static final byte _0_DIGITAL_READ                       = (byte)0xF2;
-    public static final byte _1_DIGITAL_WRITE                      = (byte)0xF3;
-    public static final byte _2_ANALOG_READ                        = (byte)0xF4;
-    public static final byte _3_ANALOG_WRITE                       = (byte)0xF5;
-    public static final byte _4_PIN_INTERRUPT                      = (byte)0xF6;
+    public static final String _0_DIGITAL_READ                       = "r";
+    public static final String _1_DIGITAL_WRITE                      = "w";
+    public static final String _2_ANALOG_READ                        = "A";
+    public static final String _3_ANALOG_WRITE                       = "W";
+    public static final String _4_PIN_INTERRUPT                      = "I";
+
+    public static final String _0_ERROR_UNKNOWN_COMMAND              = "u";
 
 }

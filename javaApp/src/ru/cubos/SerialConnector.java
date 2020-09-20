@@ -13,13 +13,17 @@ public class SerialConnector extends Decoder{
 
     HashMap<Integer, Integer> resultWaiter = new HashMap<>();
 
+    public SerialConnector(){
+        super();
+    }
+
     @Override
-    protected void digitalReadReply(byte pin, byte value){
+    protected void digitalReadReply(int pin, int value){
         resultWaiter.put((int)pin, (int)value);
     }
 
     @Override
-    protected void analogReadReply(byte pin, int value){
+    protected void analogReadReply(int pin, int value){
         resultWaiter.put((int)pin, (int)value);
     }
 
@@ -34,7 +38,6 @@ public class SerialConnector extends Decoder{
         LOW
     }
 
-    boolean isStarted = false;
     static SerialPort serialPort;
 
     public void setPort(String serialPortName){
@@ -51,11 +54,13 @@ public class SerialConnector extends Decoder{
 
     private class PortReader implements SerialPortEventListener {
 
-        public void serialEvent(SerialPortEvent event) {
+        synchronized public void serialEvent(SerialPortEvent event) {
             if(event.isRXCHAR() && event.getEventValue() > 0){
                 try {
                     byte data[] = serialPort.readBytes(event.getEventValue());
-                    SerialConnector.this.decode(data);
+                    for(int i=0; i<data.length; i++){
+                        receivedByteList.add(data[i]);
+                    }
                 }
                 catch (SerialPortException ex) {
                     System.out.println(ex);
@@ -83,20 +88,25 @@ public class SerialConnector extends Decoder{
         else digitalWrite(pin, PinLevels.LOW);
     }
 
-    boolean digitalRead(int pin){
-        byte data[] = new byte[]{
-                _0_DIGITAL_READ,
-                (byte)pin
-        };
-
-        resultWaiter.remove(pin);
-
+    void write(String s){
         try {
-            serialPort.writeBytes(data);
+            serialPort.writeString(s + " ");
+            //System.out.print(s + " ");
         } catch (SerialPortException e) {
             e.printStackTrace();
             onConnectError(e);
         }
+    }
+
+    void write(int i){
+        write("" + i);
+    }
+
+    boolean digitalRead(int pin){
+        write(_0_DIGITAL_READ);
+        write(pin);
+
+        resultWaiter.remove(pin);
 
         long timer = System.currentTimeMillis();
         final int timeout = 100;
@@ -122,19 +132,10 @@ public class SerialConnector extends Decoder{
     }
 
     int analogRead(int pin){
-        byte data[] = new byte[]{
-                _2_ANALOG_READ,
-                (byte)pin
-        };
+        write(_2_ANALOG_READ);
+        write(pin);
 
         resultWaiter.remove(pin);
-
-        try {
-            serialPort.writeBytes(data);
-        } catch (SerialPortException e) {
-            e.printStackTrace();
-            onConnectError(e);
-        }
 
         long timer = System.currentTimeMillis();
         final int timeout = 100;
@@ -143,8 +144,6 @@ public class SerialConnector extends Decoder{
                 int result = resultWaiter.get(pin);
                 resultWaiter.remove(pin);
                 return result;
-                //if(result<1)return false;
-                //else return true;
             }
 
             try {
@@ -161,7 +160,7 @@ public class SerialConnector extends Decoder{
     }
 
     void digitalWrite(int pin,  PinLevels pinLevel){
-        byte level;
+        int level;
         switch (pinLevel){
             case HIGH:
                 level = 0x01;
@@ -172,78 +171,33 @@ public class SerialConnector extends Decoder{
                 break;
         }
 
-        byte data[] = new byte[]{
-                _1_DIGITAL_WRITE,
-                (byte)pin,
-                level,
-        };
-
-        try {
-            serialPort.writeBytes(data);
-        } catch (SerialPortException e) {
-            e.printStackTrace();
-            onConnectError(e);
-        }
+        write(_1_DIGITAL_WRITE);
+        write(pin);
+        write(level);
     }
 
     void setPinInterrupt(int pin){
-        byte data[] = new byte[]{
-                _3_SET_PIN_INTERRUPT,
-                (byte) pin
-        };
-
-        try {
-            serialPort.writeBytes(data);
-        } catch (SerialPortException e) {
-            e.printStackTrace();
-            onConnectError(e);
-        }
+        write(_3_SET_PIN_INTERRUPT);
+        write(pin);
     }
 
     void clearPinInterrupt(int pin){
-        byte data[] = new byte[]{
-                _4_CLEAR_PIN_INTERRUPT,
-                (byte) pin
-        };
-
-        try {
-            serialPort.writeBytes(data);
-        } catch (SerialPortException e) {
-            e.printStackTrace();
-            onConnectError(e);
-        }
+        write(_4_CLEAR_PIN_INTERRUPT);
+        write(pin);
     }
 
     void reset(){
-        byte data[] = new byte[]{
-                _BOARD_RESET
-        };
-
-        try {
-            serialPort.writeBytes(data);
-        } catch (SerialPortException e) {
-            e.printStackTrace();
-            onConnectError(e);
-        }
+        write(_BOARD_RESET);
     }
 
     void analogWrite(int pin,  int pinLevel){
-        byte data[] = new byte[]{
-                _3_ANALOG_WRITE,
-                (byte)pin,
-                (byte)pinLevel,
-        };
-
-        try {
-            serialPort.writeBytes(data);
-        } catch (SerialPortException e) {
-            e.printStackTrace();
-            onConnectError(e);
-        }
+        write(_3_ANALOG_WRITE);
+        write(pin);
+        write(pinLevel);
     }
 
     void pinMode(int pin, PinModes pinMode){
-        byte command;
+        String command;
         switch (pinMode){
             case INPUT:
                 command = _0_SET_PIN_MODE_INPUT;
@@ -257,26 +211,16 @@ public class SerialConnector extends Decoder{
                 break;
         }
 
-        byte data[] = new byte[]{
-            command,
-            (byte)pin,
-        };
-
-        try {
-            serialPort.writeBytes(data);
-        } catch (SerialPortException e) {
-            e.printStackTrace();
-            onConnectError(e);
-            onError(Error.CONNECT_ERROR);
-        }
+        write(command);
+        write(pin);
     }
 
     void onConnectError(Exception e){
-
+        System.out.println("On connect error " + e);
     }
 
-    void onError(Error error){
-
+    void onError(Error e){
+        System.out.println("Error " + e);
     }
 
     public enum Error{
