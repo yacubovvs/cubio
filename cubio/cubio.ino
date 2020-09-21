@@ -84,8 +84,6 @@ String readString(){
      }else{
        checkInerrupts();
      }
-
-     
   }
   checkInerrupts();
   return command;
