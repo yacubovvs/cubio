@@ -5,7 +5,7 @@ import jssc.SerialPortException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.cubos.Protocol._3_ANALOG_WRITE;
+import static ru.cubos.Protocol.*;
 import static ru.cubos.SerialConnector.PinLevels.*;
 import static ru.cubos.SerialConnector.PinModes.*;
 
@@ -15,8 +15,23 @@ public class LightSwitch extends SerialConnector {
     protected void onBoardStart(){
         System.out.println("On board start");
         pinMode(10, OUTPUT);
-        digitalWrite(10, HIGH);
-        reset();
+        pinMode(11, OUTPUT);
+        //digitalWrite(3, HIGH);
+        //reset();
+
+        while(true) {
+            digitalWrite(10, 1);
+            delay(1000);
+            digitalWrite(10, 0);
+            digitalWrite(11, 1);
+            delay(1000);
+            digitalWrite(11, 1);
+            digitalWrite(10, 1);
+            delay(1000);
+            digitalWrite(11, 0);
+            digitalWrite(10, 0);
+            delay(1000);
+        }
 
 
         /*
@@ -39,18 +54,7 @@ public class LightSwitch extends SerialConnector {
 
         delay(2000);
 
-        while(true) {
-            digitalWrite(6, 1);
-            delay(1000);
-            digitalWrite(6, 0);
-            digitalWrite(5, 1);
-            delay(1000);
-            digitalWrite(5, 0);
-            digitalWrite(3, 1);
-            delay(1000);
-            digitalWrite(3, 0);
-        }
-         */
+
 
 
         //analogWrite(3, 0);

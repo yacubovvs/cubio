@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 import static ru.cubos.Protocol.*;
 
-public class SerialConnector extends Decoder{
+abstract public class SerialConnector extends Decoder{
 
     HashMap<Integer, Integer> resultWaiter = new HashMap<>();
 
@@ -69,7 +69,7 @@ public class SerialConnector extends Decoder{
         }
     }
 
-    void delay(int val){
+    protected void delay(int val){
         if(val<=0) return;
         try {
             Thread.sleep(val);
@@ -78,17 +78,17 @@ public class SerialConnector extends Decoder{
         }
     }
 
-    void digitalWrite(int pin,  int pinLevel){
+    protected void digitalWrite(int pin,  int pinLevel){
         if(pinLevel>=1) digitalWrite(pin, PinLevels.HIGH);
         else digitalWrite(pin, PinLevels.LOW);
     }
 
-    void digitalWrite(int pin,  boolean pinLevel){
+    protected void digitalWrite(int pin,  boolean pinLevel){
         if(pinLevel) digitalWrite(pin, PinLevels.HIGH);
         else digitalWrite(pin, PinLevels.LOW);
     }
 
-    void write(String s){
+    protected void write(String s){
         try {
             serialPort.writeString(s + " ");
             //System.out.print(s + " ");
@@ -98,11 +98,11 @@ public class SerialConnector extends Decoder{
         }
     }
 
-    void write(int i){
+    protected void write(int i){
         write("" + i);
     }
 
-    boolean digitalRead(int pin){
+    protected boolean digitalRead(int pin){
         write(_0_DIGITAL_READ);
         write(pin);
 
@@ -131,7 +131,7 @@ public class SerialConnector extends Decoder{
         }
     }
 
-    int analogRead(int pin){
+    protected int analogRead(int pin){
         write(_2_ANALOG_READ);
         write(pin);
 
@@ -159,7 +159,7 @@ public class SerialConnector extends Decoder{
         }
     }
 
-    void digitalWrite(int pin,  PinLevels pinLevel){
+    protected void digitalWrite(int pin,  PinLevels pinLevel){
         int level;
         switch (pinLevel){
             case HIGH:
@@ -176,27 +176,27 @@ public class SerialConnector extends Decoder{
         write(level);
     }
 
-    void setPinInterrupt(int pin){
+    protected void setPinInterrupt(int pin){
         write(_3_SET_PIN_INTERRUPT);
         write(pin);
     }
 
-    void clearPinInterrupt(int pin){
+    protected void clearPinInterrupt(int pin){
         write(_4_CLEAR_PIN_INTERRUPT);
         write(pin);
     }
 
-    void reset(){
+    protected void reset(){
         write(_BOARD_RESET);
     }
 
-    void analogWrite(int pin,  int pinLevel){
+    protected void analogWrite(int pin,  int pinLevel){
         write(_3_ANALOG_WRITE);
         write(pin);
         write(pinLevel);
     }
 
-    void pinMode(int pin, PinModes pinMode){
+    protected void pinMode(int pin, PinModes pinMode){
         String command;
         switch (pinMode){
             case INPUT:
