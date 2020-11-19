@@ -52,6 +52,10 @@ abstract public class SerialConnector extends Decoder{
         serialPort.addEventListener(new PortReader(), SerialPort.MASK_RXCHAR);
     }
 
+    public void disconnect() throws SerialPortException {
+        serialPort.closePort();
+    }
+
     private class PortReader implements SerialPortEventListener {
 
         synchronized public void serialEvent(SerialPortEvent event) {
