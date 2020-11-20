@@ -84,6 +84,7 @@ public class Transporter extends JFrame{
                 }
             }
         };
+
         //lightSwitch.setPort("COM11");
         //lightSwitch.setPort("//dev//cu.usbserial-1420");
         //lightSwitch.setPort("//dev//cu.usbserial-1420");
