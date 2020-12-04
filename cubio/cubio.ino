@@ -2,6 +2,30 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 * *                                                                     * *
+* *                              SETTINGS                               * *
+* *                                                                     * *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*/
+
+#define SERIAL_BOUNDRATE 115200
+
+/*
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* *                                                                     * *
+* *                               MODULES                               * *
+* *                                                                     * *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*/
+
+#define MODULE_PWM_PCA9685
+
+/*
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+* *                                                                     * *
 * *                            CUBIO Protocol                           * *
 * *                                                                     * *
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -26,9 +50,15 @@
 
 #define _0_ERROR_UNKNOWN_COMMAND              "u"
 
-
 #define digitalInteruptsTimeout     10
 #define digitalInterruptsLength     21    // D0-D13 + A0-A7
+
+#ifdef MODULE_PWM_PCA9685
+  #define _MODULE_PWM_PCA9685_STATUS      "m_PCA9685_s"
+  #define _MODULE_PWM_PCA9685_STEPPWM     "m_PCA9685_p"
+  #define _MODULE_PWM_PCA9685_STARTVALUE  "m_PCA9685_t"
+#endif
+
 boolean digitalInterrupt[digitalInterruptsLength*2]; 
 
 byte current_command_position = 0;
@@ -41,8 +71,12 @@ void setup(){
     digitalInterrupt[i*2] = false;
     digitalInterrupt[i*2+1] = false;
   }
+
+  #ifdef MODULE_PWM_PCA9685
+    setup_MODULE_PWM_PCA9685();
+  #endif
   
-  Serial.begin(115200);
+  Serial.begin(SERIAL_BOUNDRATE);
   write(_BOARD_STARTED);
 }
 
@@ -55,7 +89,9 @@ void write(int string){
 }
 
 long lastCheckDigitalInterrupt;
-void checkInerrupts(){
+void checkDaemons(){
+
+  // Interupts
   if(abs(millis() - lastCheckDigitalInterrupt)>digitalInteruptsTimeout){
     lastCheckDigitalInterrupt = millis();
 
@@ -71,9 +107,15 @@ void checkInerrupts(){
       }
     }  
   }
+
+  // Modules
+  #ifdef MODULE_PWM_PCA9685
+    loop_MODULE_PWM_PCA9685();
+  #endif
+  
 }
 
-String readString(){
+String readWord(){
   String command = "";
   char charReadValue = 0;
   while(true){
@@ -82,21 +124,21 @@ String readString(){
         if(charReadValue==32) break;
         command += (char)charReadValue;
      }else{
-       checkInerrupts();
+       checkDaemons();
      }
   }
-  checkInerrupts();
+  checkDaemons();
   return command;
 }
 
 int readInt(){
-  return readString().toInt();
+  return readWord().toInt();
 }
 
 void(* resetFunc) (void) = 0;
 
 void loop() {
-  String command = readString();
+  String command = readWord();
 
   if(command==_BOARD_RESET){
       resetFunc();
@@ -132,8 +174,24 @@ void loop() {
       int pin = readInt();
       int value = readInt();
       analogWrite(pin, value);
+  #ifdef MODULE_PWM_PCA9685
+    }else if(command==_MODULE_PWM_PCA9685_STATUS){
+      write(_MODULE_PWM_PCA9685_STATUS);
+      write((int)getStatus_MODULE_PWM_PCA9685());
+    }else if(command==_MODULE_PWM_PCA9685_STEPPWM){
+       int NUM              = readInt();
+       int NEW_PWM          = readInt();
+       int PWN_IN_SECONDS   = readInt();
+       setPWM_MODULE_PWM_PCA9685(NUM, NEW_PWM, PWN_IN_SECONDS);
+    }else if(command==_MODULE_PWM_PCA9685_STARTVALUE){
+       int NUM              = readInt();
+       int PWM              = readInt();
+       setStartPWM_MODULE_PWM_PCA9685(NUM, PWM);
+  #endif
   }else{
       write(_0_ERROR_UNKNOWN_COMMAND);
       write(command);
   }
 }
+
+//m_pshw_p 0 1000 100 
