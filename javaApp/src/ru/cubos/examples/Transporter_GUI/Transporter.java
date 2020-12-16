@@ -2,7 +2,7 @@ package ru.cubos.examples.Transporter_GUI;
 
 import jssc.SerialPortException;
 import jssc.SerialPortList;
-import ru.cubos.Connectors.SerialConnector;
+import ru.cubos.connectors.SerialConnector;
 import ru.cubos.customViews.ImagePanel;
 
 import javax.imageio.ImageIO;

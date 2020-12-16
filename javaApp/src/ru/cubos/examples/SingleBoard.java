@@ -1,14 +1,18 @@
-package ru.cubos;
+package ru.cubos.examples;
 
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
+import ru.cubos.LightSwitch;
 
 import static ru.cubos.Protocol.*;
 
-public class Main {
+public class SingleBoard{
     public static void main(String[] args) {
+
+        System.out.println("It`s works");
+        /*
         //serialPort = new SerialPort("COM11");
         //serialPort = new SerialPort("//dev//cu.usbserial-1420");
         LightSwitch lightSwitch = new LightSwitch();
@@ -23,6 +27,8 @@ public class Main {
         } catch (SerialPortException e) {
             e.printStackTrace();
         }
+
+        */
 
     }
 }

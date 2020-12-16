@@ -1,4 +1,4 @@
-package ru.cubos.Connectors;
+package ru.cubos.connectors;
 
 import jssc.SerialPort;
 import jssc.SerialPortEvent;

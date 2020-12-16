@@ -1,6 +1,6 @@
 package ru.cubos;
 
-import ru.cubos.Connectors.SerialConnector;
+import ru.cubos.connectors.SerialConnector;
 
 import static ru.cubos.Protocol.PinModes.*;
 

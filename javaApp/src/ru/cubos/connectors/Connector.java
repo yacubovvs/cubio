@@ -1,15 +1,6 @@
-package ru.cubos.Connectors;
-
-import jssc.SerialPort;
-import jssc.SerialPortEvent;
-import jssc.SerialPortEventListener;
-import jssc.SerialPortException;
-import ru.cubos.Protocol;
-
-import java.util.HashMap;
+package ru.cubos.connectors;
 
 import static ru.cubos.Protocol.*;
-import static ru.cubos.Protocol._2_SET_PIN_MODE_OUTPUT;
 
 public interface Connector {
 
