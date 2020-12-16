@@ -19,4 +19,23 @@ public class Protocol {
 
     public static final String _0_ERROR_UNKNOWN_COMMAND              = "u";
 
+    public enum PinModes{
+        OUTPUT,
+        INPUT,
+        INPUT_PULLUP
+    }
+
+    public enum PinLevels{
+        HIGH,
+        LOW
+    }
+
+    public enum Error{
+        CONNECT_ERROR,
+        NO_READ_ANSWER;
+        void onError(Error e){
+            System.out.println("Error " + e);
+        }
+    }
+
 }

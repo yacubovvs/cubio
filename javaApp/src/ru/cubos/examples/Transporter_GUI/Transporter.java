@@ -2,7 +2,7 @@ package ru.cubos.examples.Transporter_GUI;
 
 import jssc.SerialPortException;
 import jssc.SerialPortList;
-import ru.cubos.SerialConnector;
+import ru.cubos.Connectors.SerialConnector;
 import ru.cubos.customViews.ImagePanel;
 
 import javax.imageio.ImageIO;
@@ -14,7 +14,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-import static ru.cubos.SerialConnector.PinModes.*;
+import static ru.cubos.Protocol.PinModes.INPUT_PULLUP;
 
 public class Transporter extends JFrame{
     private JLabel sensor1Result;

@@ -1,15 +1,17 @@
-package ru.cubos;
+package ru.cubos.Connectors;
 
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
+import ru.cubos.Decoder;
+import ru.cubos.Protocol;
 
 import java.util.HashMap;
 
 import static ru.cubos.Protocol.*;
 
-abstract public class SerialConnector extends Decoder{
+public class SerialConnector extends Decoder implements Connector {
 
     HashMap<Integer, Integer> resultWaiter = new HashMap<>();
 
@@ -18,24 +20,13 @@ abstract public class SerialConnector extends Decoder{
     }
 
     @Override
-    protected void digitalReadReply(int pin, int value){
+    public void digitalReadReply(int pin, int value){
         resultWaiter.put((int)pin, (int)value);
     }
 
     @Override
-    protected void analogReadReply(int pin, int value){
+    public void analogReadReply(int pin, int value){
         resultWaiter.put((int)pin, (int)value);
-    }
-
-    public enum PinModes{
-        OUTPUT,
-        INPUT,
-        INPUT_PULLUP
-    }
-
-    public enum PinLevels{
-        HIGH,
-        LOW
     }
 
     static SerialPort serialPort;
@@ -73,7 +64,7 @@ abstract public class SerialConnector extends Decoder{
         }
     }
 
-    protected void delay(int val){
+    public void delay(int val){
         if(val<=0) return;
         try {
             Thread.sleep(val);
@@ -82,17 +73,17 @@ abstract public class SerialConnector extends Decoder{
         }
     }
 
-    protected void digitalWrite(int pin,  int pinLevel){
+    public void digitalWrite(int pin,  int pinLevel){
         if(pinLevel>=1) digitalWrite(pin, PinLevels.HIGH);
         else digitalWrite(pin, PinLevels.LOW);
     }
 
-    protected void digitalWrite(int pin,  boolean pinLevel){
+    public void digitalWrite(int pin,  boolean pinLevel){
         if(pinLevel) digitalWrite(pin, PinLevels.HIGH);
         else digitalWrite(pin, PinLevels.LOW);
     }
 
-    protected void write(String s){
+    public void write(String s){
         try {
             serialPort.writeString(s + " ");
             //System.out.print(s + " ");
@@ -102,11 +93,11 @@ abstract public class SerialConnector extends Decoder{
         }
     }
 
-    protected void write(int i){
+    public void write(int i){
         write("" + i);
     }
 
-    protected boolean digitalRead(int pin){
+    public boolean digitalRead(int pin){
         write(_0_DIGITAL_READ);
         write(pin);
 
@@ -129,13 +120,13 @@ abstract public class SerialConnector extends Decoder{
             }
 
             if(System.currentTimeMillis() - timer>timeout){
-                onError(Error.NO_READ_ANSWER);
+                onError(Protocol.Error.NO_READ_ANSWER);
                 return false;
             }
         }
     }
 
-    protected int analogRead(int pin){
+    public int analogRead(int pin){
         write(_2_ANALOG_READ);
         write(pin);
 
@@ -157,13 +148,14 @@ abstract public class SerialConnector extends Decoder{
             }
 
             if(System.currentTimeMillis() - timer>timeout){
-                onError(Error.NO_READ_ANSWER);
+                onError(Protocol.Error.NO_READ_ANSWER);
                 return -1;
             }
         }
     }
 
-    protected void digitalWrite(int pin,  PinLevels pinLevel){
+    @Override
+    public void digitalWrite(int pin, PinLevels pinLevel){
         int level;
         switch (pinLevel){
             case HIGH:
@@ -180,27 +172,27 @@ abstract public class SerialConnector extends Decoder{
         write(level);
     }
 
-    protected void setPinInterrupt(int pin){
+    public void setPinInterrupt(int pin){
         write(_3_SET_PIN_INTERRUPT);
         write(pin);
     }
 
-    protected void clearPinInterrupt(int pin){
+    public void clearPinInterrupt(int pin){
         write(_4_CLEAR_PIN_INTERRUPT);
         write(pin);
     }
 
-    protected void reset(){
+    public void reset(){
         write(_BOARD_RESET);
     }
 
-    protected void analogWrite(int pin,  int pinLevel){
+    public void analogWrite(int pin,  int pinLevel){
         write(_3_ANALOG_WRITE);
         write(pin);
         write(pinLevel);
     }
 
-    protected void pinMode(int pin, PinModes pinMode){
+    public void pinMode(int pin, Protocol.PinModes pinMode){
         String command;
         switch (pinMode){
             case INPUT:
@@ -219,17 +211,12 @@ abstract public class SerialConnector extends Decoder{
         write(pin);
     }
 
-    void onConnectError(Exception e){
+    public void onConnectError(Exception e){
         System.out.println("On connect error " + e);
     }
 
-    void onError(Error e){
+    void onError(Protocol.Error e){
         System.out.println("Error " + e);
-    }
-
-    public enum Error{
-        CONNECT_ERROR,
-        NO_READ_ANSWER
     }
 
 }
