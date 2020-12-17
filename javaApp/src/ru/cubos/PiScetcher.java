@@ -19,16 +19,27 @@ public class PiScetcher implements Connector {
     }
 
     public void test(){
-        pinMode(1, OUTPUT);
-        pinMode(6, OUTPUT);
+        pinMode(23, OUTPUT);
+        pinMode(25, OUTPUT);
+        pinMode(24, OUTPUT);
+        pinMode(27, OUTPUT);
         while(true){
-            digitalWrite(1, HIGH);
-            digitalWrite(6, LOW);
+            digitalWrite(23, HIGH);
             delay(1000);
-            digitalWrite(1, LOW);
-            digitalWrite(6, HIGH);
+            digitalWrite(24, HIGH);
             delay(1000);
-
+            digitalWrite(25, HIGH);
+            delay(1000);
+            digitalWrite(27, HIGH);
+            delay(1000);
+            digitalWrite(23, LOW);
+            delay(1000);
+            digitalWrite(24, LOW);
+            delay(1000);
+            digitalWrite(25, LOW);
+            delay(1000);
+            digitalWrite(27, LOW);
+            delay(1000);
         }
 
 
@@ -57,7 +68,8 @@ public class PiScetcher implements Connector {
     @Override
     public void digitalWrite(int pin, Protocol.PinLevels pinLevel) {
         try {
-            writeDataToFile("/sys/class/gpio/gpio" + pin + "/value", "1");
+            if(pinLevel==HIGH) writeDataToFile("/sys/class/gpio/gpio" + pin + "/value", "" + 1);
+            else writeDataToFile("/sys/class/gpio/gpio" + pin + "/value", "" + 0);
         } catch (IOException e) {
             onError(e, "digitalRead");
         }
@@ -88,6 +100,11 @@ public class PiScetcher implements Connector {
         try {
             writeDataToFile("/sys/class/gpio/export", "" + pin);
 
+        } catch (IOException e) {
+            //onError(new Exception(), "Enabling pin warning");
+        }
+
+        try {
             switch (pinMode){
                 case OUTPUT:
                     writeDataToFile("/sys/class/gpio/gpio" + pin + "/direction", "out");
@@ -95,7 +112,7 @@ public class PiScetcher implements Connector {
                 case INPUT_PULLUP:
                     System.out.println("INPUT_PULLUP is not supported in Single Boards CubIO");
                 case INPUT:
-                    writeDataToFile("/sys/class/gpio/gpio" + pin + "/direction", "int");
+                    writeDataToFile("/sys/class/gpio/gpio" + pin + "/direction", "in");
                     break;
             }
 
