@@ -20,11 +20,15 @@ public class PiScetcher implements Connector {
 
     public void test(){
         pinMode(1, OUTPUT);
+        pinMode(6, OUTPUT);
         while(true){
             digitalWrite(1, HIGH);
+            digitalWrite(6, LOW);
             delay(1000);
             digitalWrite(1, LOW);
+            digitalWrite(6, HIGH);
             delay(1000);
+
         }
 
 
