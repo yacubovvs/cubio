@@ -64,15 +64,6 @@ public class SerialConnector extends Decoder implements Connector {
         }
     }
 
-    public void delay(int val){
-        if(val<=0) return;
-        try {
-            Thread.sleep(val);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void digitalWrite(int pin,  int pinLevel){
         if(pinLevel>=1) digitalWrite(pin, PinLevels.HIGH);
         else digitalWrite(pin, PinLevels.LOW);
@@ -89,7 +80,7 @@ public class SerialConnector extends Decoder implements Connector {
             //System.out.print(s + " ");
         } catch (SerialPortException e) {
             e.printStackTrace();
-            onConnectError(e);
+            onError(e, "Serial port send error");
         }
     }
 
@@ -120,7 +111,7 @@ public class SerialConnector extends Decoder implements Connector {
             }
 
             if(System.currentTimeMillis() - timer>timeout){
-                onError(Protocol.Error.NO_READ_ANSWER);
+                onError(Protocol.Error.NO_READ_ANSWER, "No read answer");
                 return false;
             }
         }
@@ -148,7 +139,7 @@ public class SerialConnector extends Decoder implements Connector {
             }
 
             if(System.currentTimeMillis() - timer>timeout){
-                onError(Protocol.Error.NO_READ_ANSWER);
+                onError(Protocol.Error.NO_READ_ANSWER, "No read answer");
                 return -1;
             }
         }
@@ -211,11 +202,11 @@ public class SerialConnector extends Decoder implements Connector {
         write(pin);
     }
 
-    public void onConnectError(Exception e){
+    public void onError(Exception e, String description){
         System.out.println("On connect error " + e);
     }
 
-    void onError(Protocol.Error e){
+    public void onError(Protocol.Error e, String description){
         System.out.println("Error " + e);
     }
 
