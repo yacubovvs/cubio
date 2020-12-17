@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="javaApp:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/javaApp_jar</output-path>
+    <root id="archive" name="javaApp.jar">
+      <element id="module-output" name="javaApp" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/jssc-2.9.2.jar" path-in-jar="/" />
+      <element id="library" level="project" name="slf4j-nop-1.7.9-javadoc (2)" />
+      <element id="library" level="project" name="slf4j-nop-1.7.9-javadoc" />
+    </root>
+  </artifact>
+</component>
