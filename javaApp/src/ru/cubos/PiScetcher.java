@@ -1,28 +1,45 @@
 package ru.cubos;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import static ru.cubos.Protocol.PinLevels.*;
 import static ru.cubos.Protocol.PinModes.*;
 
 public class PiScetcher implements Connector {
-    static final int INTERRUPT_DAEMON_DELAY_MS = 100;
+    static final int INTERRUPT_DAEMON_DELAY_MS = 10;
+    HashMap<Integer, Boolean> interruptDigitalPinsValues = new HashMap<>();
+    Thread interruptDaemon = null;
 
 
-    public  PiScetcher(){
+    public  PiScetcher(){ }
 
-        Thread interruptDaemon = new Thread(new Runnable() {
+    void createInterruptDaemon(){
+        interruptDaemon = new Thread(new Runnable() {
             @Override
             public void run() {
                 while(true){
+                    // Checking pins interrupt
+                    for(Map.Entry<Integer, Boolean> entry : interruptDigitalPinsValues.entrySet()) {
+                        Integer pin = entry.getKey();
+                        Boolean value = entry.getValue();
+                        boolean currentValue = digitalRead(pin);
+
+                        if(currentValue!=value.booleanValue()){
+                            interruptDigitalPinsValues.put((Integer)pin, value);
+                            digitalInterruptReply(pin, (value?1:0));
+                        }
+                    }
                     delay(INTERRUPT_DAEMON_DELAY_MS);
                 }
             }
         });
 
+        interruptDaemon.start();
     }
-
-
 
     public static void main(String[] args) {
         PiScetcher piScetcher = new PiScetcher();
@@ -41,24 +58,38 @@ public class PiScetcher implements Connector {
         pinMode(24, OUTPUT);
         pinMode(27, OUTPUT);
 
+        setPinInterrupt(20);
+        setPinInterrupt(26);
+        setPinInterrupt(16);
+        setPinInterrupt(19);
+        /*
         while(true){
             if(digitalRead(20)){
                 digitalWrite(23, HIGH);
+            }else{
+                digitalWrite(23, LOW);
             }
 
             if(digitalRead(26)){
                 digitalWrite(25, HIGH);
+            }else{
+                digitalWrite(25, LOW);
             }
 
             if(digitalRead(16)){
                 digitalWrite(24, HIGH);
+            }else{
+                digitalWrite(24, LOW);
             }
 
             if(digitalRead(19)){
                 digitalWrite(27, HIGH);
+            }else{
+                digitalWrite(27, LOW);
             }
+            */
 
-            delay(100);
+        //delay(100);
 
             /*
             digitalWrite(23, HIGH);
@@ -77,10 +108,10 @@ public class PiScetcher implements Connector {
             delay(100);
             digitalWrite(27, LOW);
             delay(100);
+            }
             */
 
-        }
-
+        //delay(10);
 
     }
 
@@ -108,12 +139,13 @@ public class PiScetcher implements Connector {
 
     @Override
     public void setPinInterrupt(int pin) {
-
+        interruptDigitalPinsValues.put(pin, digitalRead(pin));
+        if(interruptDaemon==null) createInterruptDaemon();
     }
 
     @Override
     public void clearPinInterrupt(int pin) {
-
+        interruptDigitalPinsValues.remove((Integer)pin);
     }
 
     @Override
@@ -169,7 +201,7 @@ public class PiScetcher implements Connector {
 
     @Override
     public void digitalInterruptReply(int pin, int value) {
-
+        System.out.println("Interrupt on pin " + pin + " with level " + value);
     }
 
 
