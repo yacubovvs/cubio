@@ -1,9 +1,10 @@
-package ru.cubos.connectors;
+package ru.cubos.arduino;
 
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
+import ru.cubos.Connector;
 import ru.cubos.Decoder;
 import ru.cubos.Protocol;
 
@@ -208,6 +209,11 @@ public class SerialConnector extends Decoder implements Connector {
 
     public void onError(Protocol.Error e, String description){
         System.out.println("Error " + e);
+    }
+
+    @Override
+    public void digitalInterruptReply(int pin, int value) {
+
     }
 
 }

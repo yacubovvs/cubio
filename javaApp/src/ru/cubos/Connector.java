@@ -1,13 +1,10 @@
-package ru.cubos.connectors;
+package ru.cubos;
 
 import ru.cubos.Protocol;
 
 import static ru.cubos.Protocol.*;
 
 public interface Connector {
-
-    void digitalReadReply(int pin, int value);
-    void analogReadReply(int pin, int value);
     default void delay(long val){
         if(val<=0) return;
         try {
@@ -34,4 +31,5 @@ public interface Connector {
     void pinMode(int pin, PinModes pinMode);
     void onError(Exception e, String description);
     void onError(Protocol.Error e, String description);
+    void digitalInterruptReply(int pin, int value);
 }

@@ -1,17 +1,28 @@
 package ru.cubos;
 
-import ru.cubos.connectors.Connector;
-import ru.cubos.connectors.SingleBoardSocketConnector;
-
-import javax.swing.plaf.synth.SynthOptionPaneUI;
-import java.io.FileWriter;
-import java.io.IOException;
-import ru.cubos.Protocol.PinLevels.*;
+import java.io.*;
 
 import static ru.cubos.Protocol.PinLevels.*;
 import static ru.cubos.Protocol.PinModes.*;
 
 public class PiScetcher implements Connector {
+    static final int INTERRUPT_DAEMON_DELAY_MS = 100;
+
+
+    public  PiScetcher(){
+
+        Thread interruptDaemon = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true){
+                    delay(INTERRUPT_DAEMON_DELAY_MS);
+                }
+            }
+        });
+
+    }
+
+
 
     public static void main(String[] args) {
         PiScetcher piScetcher = new PiScetcher();
@@ -19,49 +30,69 @@ public class PiScetcher implements Connector {
     }
 
     public void test(){
+
+        pinMode(20, INPUT);
+        pinMode(26, INPUT);
+        pinMode(16, INPUT);
+        pinMode(19, INPUT);
+
         pinMode(23, OUTPUT);
         pinMode(25, OUTPUT);
         pinMode(24, OUTPUT);
         pinMode(27, OUTPUT);
+
         while(true){
+            if(digitalRead(20)){
+                digitalWrite(23, HIGH);
+            }
+
+            if(digitalRead(26)){
+                digitalWrite(25, HIGH);
+            }
+
+            if(digitalRead(16)){
+                digitalWrite(24, HIGH);
+            }
+
+            if(digitalRead(19)){
+                digitalWrite(27, HIGH);
+            }
+
+            delay(100);
+
+            /*
             digitalWrite(23, HIGH);
-            delay(1000);
+            delay(100);
             digitalWrite(24, HIGH);
-            delay(1000);
+            delay(100);
             digitalWrite(25, HIGH);
-            delay(1000);
+            delay(100);
             digitalWrite(27, HIGH);
-            delay(1000);
+            delay(100);
             digitalWrite(23, LOW);
-            delay(1000);
+            delay(100);
             digitalWrite(24, LOW);
-            delay(1000);
+            delay(100);
             digitalWrite(25, LOW);
-            delay(1000);
+            delay(100);
             digitalWrite(27, LOW);
-            delay(1000);
+            delay(100);
+            */
+
         }
 
 
     }
 
     @Override
-    public void digitalReadReply(int pin, int value) {
-
-    }
-
-    @Override
-    public void analogReadReply(int pin, int value) {
-
-    }
-
-    @Override
     public boolean digitalRead(int pin) {
-        return false;
+        if(readDataFromFile("/sys/class/gpio/gpio" + pin + "/value").equals("1")) return true;
+        else return false;
     }
 
     @Override
     public int analogRead(int pin) {
+        onWarning("Analog read is not supported in single board computers like RaspberryPI or OrangePI");
         return 0;
     }
 
@@ -92,8 +123,11 @@ public class PiScetcher implements Connector {
 
     @Override
     public void analogWrite(int pin, int pinLevel) {
-
     }
+
+    public void onWarning(String warning){
+        System.out.println("Warning: " + warning);
+    };
 
     @Override
     public void pinMode(int pin, Protocol.PinModes pinMode) {
@@ -101,7 +135,7 @@ public class PiScetcher implements Connector {
             writeDataToFile("/sys/class/gpio/export", "" + pin);
 
         } catch (IOException e) {
-            //onError(new Exception(), "Enabling pin warning");
+            onWarning("Pin already activated");
         }
 
         try {
@@ -133,11 +167,33 @@ public class PiScetcher implements Connector {
         if(description.length()!=0) System.out.println("Error: " + description);
     }
 
+    @Override
+    public void digitalInterruptReply(int pin, int value) {
+
+    }
+
 
     public void writeDataToFile(String path, String value) throws IOException {
         FileWriter writer = new FileWriter(path, false);
         writer.write(value);
         writer.flush();
         writer.close();
+    }
+
+    public String readDataFromFile(String path){
+        try {
+            FileReader reader = new FileReader(path);
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            String result = bufferedReader.readLine();
+            bufferedReader.close();
+            reader.close();
+            return result.trim();
+        } catch (FileNotFoundException e) {
+            onError(e, "Pin file not exist");
+            return "";
+        } catch (IOException e) {
+            onError(e, "Cant read pin file");
+            return "";
+        }
     }
 }

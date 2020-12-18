@@ -1,4 +1,4 @@
-package ru.cubos.connectors;
+package ru.cubos.raspberrypi;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,7 +11,7 @@ import java.util.List;
 
 import static ru.cubos.SingleboardSocketServer.clientBufferSize_max;
 
-public class SingleBoardSocketConnector{
+public class RaspberryPiSocketConnector {
 
     private static Socket clientSocket;
     private static InputStream in;
@@ -33,7 +33,7 @@ public class SingleBoardSocketConnector{
 
 
 
-    public SingleBoardSocketConnector(final String addr, final int port){
+    public RaspberryPiSocketConnector(final String addr, final int port){
 
         try {
             //clientSocket = new Socket(addr, port);

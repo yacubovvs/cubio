@@ -1,14 +1,6 @@
-package ru.cubos.examples;
+package ru.cubos;
 
-import jssc.SerialPort;
-import jssc.SerialPortEvent;
-import jssc.SerialPortEventListener;
-import jssc.SerialPortException;
-import ru.cubos.LightSwitch;
-import ru.cubos.SingleboardSocketServer;
-import ru.cubos.connectors.SingleBoardSocketConnector;
-
-import static ru.cubos.Protocol.*;
+import ru.cubos.raspberrypi.RaspberryPiSocketConnector;
 
 public class SingleBoardServer {
     public static void main(String[] args) {
@@ -30,7 +22,7 @@ public class SingleBoardServer {
         }
 
 
-        SingleBoardSocketConnector socketConnector = new SingleBoardSocketConnector("10.0.0.153", 4);
+        RaspberryPiSocketConnector socketConnector = new RaspberryPiSocketConnector("10.0.0.153", 4);
         socketConnector.addMessage("Message".getBytes());
 
     }
