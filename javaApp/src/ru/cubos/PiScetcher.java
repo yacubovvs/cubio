@@ -29,8 +29,8 @@ public class PiScetcher implements Connector {
                         boolean currentValue = digitalRead(pin);
 
                         if(currentValue!=value.booleanValue()){
-                            interruptDigitalPinsValues.put((Integer)pin, value);
-                            digitalInterruptReply(pin, (value?1:0));
+                            interruptDigitalPinsValues.put((Integer)pin, currentValue);
+                            digitalInterruptReply(pin, (currentValue?1:0));
                         }
                     }
                     delay(INTERRUPT_DAEMON_DELAY_MS);
@@ -58,36 +58,40 @@ public class PiScetcher implements Connector {
         pinMode(24, OUTPUT);
         pinMode(27, OUTPUT);
 
+        delay(500);
+
         setPinInterrupt(20);
         setPinInterrupt(26);
         setPinInterrupt(16);
         setPinInterrupt(19);
+
+
         /*
-        while(true){
-            if(digitalRead(20)){
+        while(true) {
+            if (digitalRead(20)) {
                 digitalWrite(23, HIGH);
-            }else{
+            } else {
                 digitalWrite(23, LOW);
             }
 
-            if(digitalRead(26)){
+            if (digitalRead(26)) {
                 digitalWrite(25, HIGH);
-            }else{
+            } else {
                 digitalWrite(25, LOW);
             }
 
-            if(digitalRead(16)){
+            if (digitalRead(16)) {
                 digitalWrite(24, HIGH);
-            }else{
+            } else {
                 digitalWrite(24, LOW);
             }
 
-            if(digitalRead(19)){
+            if (digitalRead(19)) {
                 digitalWrite(27, HIGH);
-            }else{
+            } else {
                 digitalWrite(27, LOW);
             }
-            */
+        }*/
 
         //delay(100);
 

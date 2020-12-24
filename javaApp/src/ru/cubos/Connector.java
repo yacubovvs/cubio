@@ -31,5 +31,6 @@ public interface Connector {
     void pinMode(int pin, PinModes pinMode);
     void onError(Exception e, String description);
     void onError(Protocol.Error e, String description);
-    void digitalInterruptReply(int pin, int value);
+    void digitalInterruptReply(int pin, int value, long time);
+    long millis();
 }

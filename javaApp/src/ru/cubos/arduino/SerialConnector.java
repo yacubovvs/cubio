@@ -212,7 +212,12 @@ public class SerialConnector extends Decoder implements Connector {
     }
 
     @Override
-    public void digitalInterruptReply(int pin, int value) {
+    public long millis() {
+        return 0;
+    }
+
+    @Override
+    public void digitalInterruptReply(int pin, int value, long time) {
 
     }
 
