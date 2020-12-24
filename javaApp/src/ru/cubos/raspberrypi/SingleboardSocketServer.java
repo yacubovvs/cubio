@@ -1,4 +1,4 @@
-package ru.cubos;
+package ru.cubos.raspberrypi;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,8 +95,9 @@ public class SingleboardSocketServer {
 
             try {
                 while ((count = in.read(bytes)) > 0) {
-                    System.out.println("Read server: " + bytes.toString());
-
+                    //System.out.println("Read server: " + bytes.toString());
+                    String inString = (new String(bytes, StandardCharsets.UTF_8)).substring(0, count);
+                    System.out.println("Read server: " + inString);
                 }
             } catch (IOException e) {
                 e.printStackTrace();

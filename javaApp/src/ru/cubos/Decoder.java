@@ -33,7 +33,8 @@ public class Decoder {
                     }else if(s.equals(_4_PIN_INTERRUPT)) {
                         int pin = readInt();
                         int value = readInt();
-                        digitalInterruptReply(pin, value);
+                        long time = readLong();
+                        digitalInterruptReply(pin, value, time);
                     }else{
                         decode_unknownOperation(s);
                         break;
@@ -60,8 +61,17 @@ public class Decoder {
         }catch (Exception ex){
             return -1;
         }
-
     }
+
+    long readLong(){
+        try {
+            long value = Long.parseLong(readString());
+            return value;
+        }catch (Exception ex){
+            return -1;
+        }
+    }
+
 
     String readString(){
         String s = "";
@@ -98,7 +108,7 @@ public class Decoder {
         System.out.println("digitaReadReply " + pin + " - " + value);
     }
 
-    protected void digitalInterruptReply(int pin, int value){
+    protected void digitalInterruptReply(int pin, int value, long time){
         System.out.println("digitaInterruptReply " + pin + " - " + value);
     }
 }

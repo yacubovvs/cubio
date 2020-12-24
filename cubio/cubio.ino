@@ -103,6 +103,7 @@ void checkDaemons(){
           write(_4_PIN_INTERRUPT);
           write((int)i);
           write((int)digitalValue);       
+          write((long)millis());
         } 
       }
     }  

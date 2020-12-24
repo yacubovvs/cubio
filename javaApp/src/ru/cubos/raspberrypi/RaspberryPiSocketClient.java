@@ -6,12 +6,13 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.cubos.SingleboardSocketServer.clientBufferSize_max;
+import static ru.cubos.raspberrypi.SingleboardSocketServer.clientBufferSize_max;
 
-public class RaspberryPiSocketConnector {
+public class RaspberryPiSocketClient {
 
     private static Socket clientSocket;
     private static InputStream in;
@@ -22,8 +23,9 @@ public class RaspberryPiSocketConnector {
     private Reader reader;
     private Writer writer;
 
-    public void addMessage(byte[] message){
-        messagesToSend.add(message);
+    public void addMessage(String message){
+        messagesToSend.add(message.getBytes());
+        messagesToSend.add("\n".getBytes());
 
         if(writer==null){
             writer = new Writer();
@@ -31,9 +33,17 @@ public class RaspberryPiSocketConnector {
         }
     }
 
+    public void disconnect(){
+        try {
+            clientSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
-    public RaspberryPiSocketConnector(final String addr, final int port){
+
+    public RaspberryPiSocketClient(final String addr, final int port){
 
         try {
             //clientSocket = new Socket(addr, port);
@@ -79,10 +89,15 @@ public class RaspberryPiSocketConnector {
                     while ((count = in.read(bytes)) > 0) {
                         System.out.println("Read client: " + bytes.toString());
                     }
+                }catch(SocketException e){
+                    if(clientSocket.isClosed()) {
+                        return;
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                     return;
                 }
+
             }
         }
     }

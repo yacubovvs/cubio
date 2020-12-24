@@ -56,7 +56,7 @@ public class Transporter extends JFrame{
             }
 
             @Override
-            public void digitalInterruptReply(int pin, int value) {
+            public void digitalInterruptReply(int pin, int value, long time) {
                 //super.digitalInterruptReply(pin, value);
 
                 if(pin == 8){

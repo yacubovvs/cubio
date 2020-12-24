@@ -62,8 +62,8 @@ public class LightSwitch extends SerialConnector {
     }
 
     @Override
-    public void digitalInterruptReply(int pin, int value){
-        System.out.println("Digital interrupt pin " + pin + " - " + value);
+    public void digitalInterruptReply(int pin, int value, long time){
+        System.out.println("Digital interrupt pin " + pin + " - " + value + " on time " + time);
     }
 
 }
