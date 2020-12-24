@@ -14,14 +14,18 @@ public class PiScetcher implements Connector {
     HashMap<Integer, Boolean> interruptDigitalPinsValues = new HashMap<>();
     Thread interruptDaemon = null;
 
+    long appStartMillis;
 
-    public  PiScetcher(){ }
+    public  PiScetcher(){
+        appStartMillis = System.currentTimeMillis();
+    }
 
     void createInterruptDaemon(){
         interruptDaemon = new Thread(new Runnable() {
             @Override
             public void run() {
                 while(true){
+                    long current_time = millis();
                     // Checking pins interrupt
                     for(Map.Entry<Integer, Boolean> entry : interruptDigitalPinsValues.entrySet()) {
                         Integer pin = entry.getKey();
@@ -30,7 +34,7 @@ public class PiScetcher implements Connector {
 
                         if(currentValue!=value.booleanValue()){
                             interruptDigitalPinsValues.put((Integer)pin, currentValue);
-                            digitalInterruptReply(pin, (currentValue?1:0));
+                            digitalInterruptReply(pin, (currentValue?1:0), current_time);
                         }
                     }
                     delay(INTERRUPT_DAEMON_DELAY_MS);
@@ -57,8 +61,6 @@ public class PiScetcher implements Connector {
         pinMode(25, OUTPUT);
         pinMode(24, OUTPUT);
         pinMode(27, OUTPUT);
-
-        delay(500);
 
         setPinInterrupt(20);
         setPinInterrupt(26);
@@ -91,7 +93,8 @@ public class PiScetcher implements Connector {
             } else {
                 digitalWrite(27, LOW);
             }
-        }*/
+        }
+        */
 
         //delay(100);
 
@@ -204,8 +207,13 @@ public class PiScetcher implements Connector {
     }
 
     @Override
-    public void digitalInterruptReply(int pin, int value) {
-        System.out.println("Interrupt on pin " + pin + " with level " + value);
+    public void digitalInterruptReply(int pin, int value, long time) {
+        System.out.println("Interrupt on pin " + pin + " with level " + value + " in time ms " + time + " ms");
+    }
+
+    @Override
+    public long millis() {
+        return System.currentTimeMillis() - appStartMillis;
     }
 
 
