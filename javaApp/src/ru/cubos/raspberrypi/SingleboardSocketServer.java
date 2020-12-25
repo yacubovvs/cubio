@@ -1,5 +1,7 @@
 package ru.cubos.raspberrypi;
 
+import ru.cubos.PiScetcher;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -11,7 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SingleboardSocketServer {
+public class SingleboardSocketServer extends ServerSocketDataDecoder {
 
     private Socket clientSocket; //сокет для общения
     private ServerSocket socketServer; // серверсокет
@@ -86,6 +88,7 @@ public class SingleboardSocketServer {
         //}
     }
 
+    String totalIncomeMessage = "";
     private class Reader extends Thread {
         @Override
         public void run() {
@@ -97,12 +100,33 @@ public class SingleboardSocketServer {
                 while ((count = in.read(bytes)) > 0) {
                     //System.out.println("Read server: " + bytes.toString());
                     String inString = (new String(bytes, StandardCharsets.UTF_8)).substring(0, count);
+                    totalIncomeMessage += inString;
                     System.out.println("Read server: " + inString);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-                return;
+                //return;
             }
+
+            //System.out.println("Reader hendler");
+
+            //System.out.println("stringPosition " + stringPosition);
+
+            while(totalIncomeMessage.indexOf('\n')!=-1){
+                int stringPosition = totalIncomeMessage.indexOf('\n');
+                String parseMessage = totalIncomeMessage.substring(0, stringPosition);
+                //System.out.println("Parse message: " + parseMessage);
+                decodeString(parseMessage);
+                totalIncomeMessage = totalIncomeMessage.substring(stringPosition + 1, totalIncomeMessage.length());
+            }
+            /*
+            boolean contin = true;
+
+            while(contin){
+
+            }
+            */
+
         }
     }
 
@@ -133,6 +157,7 @@ public class SingleboardSocketServer {
             writer = null;
         }
     }
+
 
 }
 

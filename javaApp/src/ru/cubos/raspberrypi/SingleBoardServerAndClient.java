@@ -20,10 +20,9 @@ public class SingleBoardServerAndClient {
         }
 
         RaspberryPiSocketClient socketClient = new RaspberryPiSocketClient("127.0.0.1", 8000);
-        socketClient.addMessage("test");
-        socketClient.addMessage("test2");
-        socketClient.addMessage("test3");
-        socketClient.addMessage("test4");
+        socketClient.addMessage("test 1000 500 40");
+        socketClient.addMessage("test2 1001 501 41");
+
 
         try {
             Thread.sleep(1000);

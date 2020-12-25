@@ -24,8 +24,9 @@ public class RaspberryPiSocketClient {
     private Writer writer;
 
     public void addMessage(String message){
+        message.trim();
+        message += "\n";
         messagesToSend.add(message.getBytes());
-        messagesToSend.add("\n".getBytes());
 
         if(writer==null){
             writer = new Writer();
