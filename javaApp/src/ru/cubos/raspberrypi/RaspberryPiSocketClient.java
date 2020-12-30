@@ -37,9 +37,9 @@ public class RaspberryPiSocketClient implements Connector {
 
         while (true){
             digitalWrite(2, 0);
-            delay(1000);
+            delay(2000);
             digitalWrite(2, 1);
-            delay(1000);
+            delay(2000);
         }
 
     }
@@ -91,7 +91,8 @@ public class RaspberryPiSocketClient implements Connector {
 
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Error starting socket client");
+            //System.out.println("Error starting socket client");
+            onError(Protocol.Error.CONNECT_ERROR, "Error starting socket client");
             return;
         }
 
@@ -109,7 +110,7 @@ public class RaspberryPiSocketClient implements Connector {
 
     @Override
     public void digitalWrite(int pin, Protocol.PinLevels pinLevel) {
-
+        addMessage(Protocol._1_DIGITAL_WRITE + " " + pin + " " + (pinLevel==Protocol.PinLevels.HIGH?1:0));
     }
 
     @Override
@@ -134,7 +135,14 @@ public class RaspberryPiSocketClient implements Connector {
 
     @Override
     public void pinMode(int pin, Protocol.PinModes pinMode) {
-
+        switch (pinMode){
+            case OUTPUT:
+                addMessage(Protocol._2_SET_PIN_MODE_OUTPUT + " " + pin);
+            case INPUT:
+                addMessage(Protocol._0_SET_PIN_MODE_INPUT + " " + pin);
+            case INPUT_PULLUP:
+                addMessage(Protocol._1_SET_PIN_MODE_INPUT_PULLUP + " " + pin);
+        }
     }
 
     @Override

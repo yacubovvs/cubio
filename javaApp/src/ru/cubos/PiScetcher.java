@@ -67,59 +67,6 @@ public class PiScetcher implements Connector {
         setPinInterrupt(16);
         setPinInterrupt(19);
 
-
-        /*
-        while(true) {
-            if (digitalRead(20)) {
-                digitalWrite(23, HIGH);
-            } else {
-                digitalWrite(23, LOW);
-            }
-
-            if (digitalRead(26)) {
-                digitalWrite(25, HIGH);
-            } else {
-                digitalWrite(25, LOW);
-            }
-
-            if (digitalRead(16)) {
-                digitalWrite(24, HIGH);
-            } else {
-                digitalWrite(24, LOW);
-            }
-
-            if (digitalRead(19)) {
-                digitalWrite(27, HIGH);
-            } else {
-                digitalWrite(27, LOW);
-            }
-        }
-        */
-
-        //delay(100);
-
-            /*
-            digitalWrite(23, HIGH);
-            delay(100);
-            digitalWrite(24, HIGH);
-            delay(100);
-            digitalWrite(25, HIGH);
-            delay(100);
-            digitalWrite(27, HIGH);
-            delay(100);
-            digitalWrite(23, LOW);
-            delay(100);
-            digitalWrite(24, LOW);
-            delay(100);
-            digitalWrite(25, LOW);
-            delay(100);
-            digitalWrite(27, LOW);
-            delay(100);
-            }
-            */
-
-        //delay(10);
-
     }
 
     @Override
@@ -140,7 +87,7 @@ public class PiScetcher implements Connector {
             if(pinLevel==HIGH) writeDataToFile("/sys/class/gpio/gpio" + pin + "/value", "" + 1);
             else writeDataToFile("/sys/class/gpio/gpio" + pin + "/value", "" + 0);
         } catch (IOException e) {
-            onError(e, "digitalRead");
+            onError(e, "digitalWrite");
         }
     }
 
