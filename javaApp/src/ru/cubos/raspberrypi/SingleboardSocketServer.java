@@ -44,6 +44,18 @@ public class SingleboardSocketServer extends ServerSocketDataDecoder {
         }
     }
 
+    public static void main(String[] args) {
+        Thread serverThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                SingleboardSocketServer socketServer = new SingleboardSocketServer(8000);
+                socketServer.start();
+                System.out.println("...server started");
+            }
+        });
+        serverThread.start();
+    }
+
     public void start(){
         //while (true) {
         try {
