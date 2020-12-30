@@ -13,6 +13,7 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.cubos.Protocol.PinLevels.*;
 import static ru.cubos.Protocol.PinModes.*;
 import static ru.cubos.raspberrypi.SingleboardSocketServer.clientBufferSize_max;
 
@@ -33,13 +34,13 @@ public class RaspberryPiSocketClient implements Connector {
     }
 
     void run(){
-        pinMode(2, OUTPUT);
+        pinMode(2, INPUT);
+        //addMessage("o 2");
 
         while (true){
-            digitalWrite(2, 0);
-            delay(2000);
-            digitalWrite(2, 1);
-            delay(2000);
+            //digitalWrite(2, 0);
+            digitalRead(2);
+            delay(1000);
         }
 
     }
@@ -100,6 +101,7 @@ public class RaspberryPiSocketClient implements Connector {
 
     @Override
     public boolean digitalRead(int pin) {
+        addMessage(Protocol._0_DIGITAL_READ + " " + pin);
         return false;
     }
 
@@ -110,7 +112,7 @@ public class RaspberryPiSocketClient implements Connector {
 
     @Override
     public void digitalWrite(int pin, Protocol.PinLevels pinLevel) {
-        addMessage(Protocol._1_DIGITAL_WRITE + " " + pin + " " + (pinLevel==Protocol.PinLevels.HIGH?1:0));
+        addMessage(Protocol._1_DIGITAL_WRITE + " " + pin + " " + (pinLevel== HIGH?1:0));
     }
 
     @Override
@@ -138,10 +140,13 @@ public class RaspberryPiSocketClient implements Connector {
         switch (pinMode){
             case OUTPUT:
                 addMessage(Protocol._2_SET_PIN_MODE_OUTPUT + " " + pin);
+                break;
             case INPUT:
                 addMessage(Protocol._0_SET_PIN_MODE_INPUT + " " + pin);
+                break;
             case INPUT_PULLUP:
                 addMessage(Protocol._1_SET_PIN_MODE_INPUT_PULLUP + " " + pin);
+                break;
         }
     }
 
