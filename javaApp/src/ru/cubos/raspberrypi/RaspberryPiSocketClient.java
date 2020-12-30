@@ -6,6 +6,7 @@ import ru.cubos.Protocol;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -99,9 +100,12 @@ public class RaspberryPiSocketClient implements Connector {
 
     }
 
+    List<Integer> digitalReadArray = new ArrayList<>();
+
     @Override
     public boolean digitalRead(int pin) {
         addMessage(Protocol._0_DIGITAL_READ + " " + pin);
+        //readWaitArray.add()
         return false;
     }
 
