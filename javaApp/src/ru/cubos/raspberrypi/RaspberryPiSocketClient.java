@@ -23,6 +23,13 @@ public class RaspberryPiSocketClient {
     private Reader reader;
     private Writer writer;
 
+    public static void main(String[] args) {
+        RaspberryPiSocketClient socketClient = new RaspberryPiSocketClient("10.0.0.154", 8000);
+        socketClient.addMessage("o 2");
+        socketClient.addMessage("w 2 1");
+        socketClient.disconnect();
+    }
+
     public void addMessage(String message){
         message.trim();
         message += "\n";

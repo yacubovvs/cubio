@@ -92,6 +92,14 @@ public class SingleboardSocketServer extends ServerSocketDataDecoder {
             } finally {
                 System.out.println("Server closed!");
                 if(socketServer!=null)socketServer.close();
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                this.start();
             }
         } catch (IOException e) {
             System.err.println(e);
