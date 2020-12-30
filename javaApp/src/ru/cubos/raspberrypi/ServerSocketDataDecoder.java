@@ -80,11 +80,11 @@ public class ServerSocketDataDecoder extends PiScetcher {
     }
 
     void write(String string){
-        System.out.println("Write to client " + string);
+        System.out.println("Write to client string " + string);
     }
 
     void write(Number number){
-        System.out.println("Write to client " + number);
+        System.out.println("Write to client number " + number);
     }
 
 
