@@ -22,41 +22,60 @@ public class ServerSocketDataDecoder extends PiScetcher {
         */
 
         String command = readCommand();
+        int pin;
+        int value;
 
-        if(command==_BOARD_RESET){
-            reset();
-        }else if(command==_0_SET_PIN_MODE_INPUT){
-            pinMode(readInt(), INPUT);
-        }else if(command==_1_SET_PIN_MODE_INPUT_PULLUP){
-            pinMode(readInt(), INPUT_PULLUP);
-        }else if(command==_2_SET_PIN_MODE_OUTPUT){
-            pinMode(readInt(), OUTPUT);
-        }else if(command==_3_SET_PIN_INTERRUPT){
-            setPinInterrupt(readInt());
-        }else if(command==_4_CLEAR_PIN_INTERRUPT){
-            clearPinInterrupt(readInt());
-        }else if(command==_0_DIGITAL_READ){
-            int pin = readInt();
-            write(_0_DIGITAL_READ);
-            write(pin);
-            write((digitalRead(pin)==true?1:0));
-        }else if(command==_1_DIGITAL_WRITE){
-            int pin = readInt();
-            int value = readInt();
-            digitalWrite(pin, value);
-        }else if(command==_2_ANALOG_READ){
-            int pin = readInt();
-            int value = analogRead(pin);
-            write(_2_ANALOG_READ);
-            write(pin);
-            write(value);
-        }else if(command==_3_ANALOG_WRITE){
-            int pin = readInt();
-            int value = readInt();
-            analogWrite(pin, value);
-        }else{
-            write(_0_ERROR_UNKNOWN_COMMAND);
-            write(command);
+        switch(command){
+            case _BOARD_RESET:
+                reset();
+                break;
+            case _0_SET_PIN_MODE_INPUT:
+                pin = readInt();
+                pinMode(pin, INPUT);
+                break;
+            case _1_SET_PIN_MODE_INPUT_PULLUP:
+                pin = readInt();
+                pinMode(pin, INPUT_PULLUP);
+                break;
+            case _2_SET_PIN_MODE_OUTPUT:
+                pin = readInt();
+                pinMode(pin, OUTPUT);
+                break;
+            case _3_SET_PIN_INTERRUPT:
+                pin = readInt();
+                setPinInterrupt(pin);
+                break;
+            case _4_CLEAR_PIN_INTERRUPT:
+                pin = readInt();
+                clearPinInterrupt(pin);
+                break;
+            case _0_DIGITAL_READ:
+                pin = readInt();
+                write(_0_DIGITAL_READ);
+                write(pin);
+                write((digitalRead(pin) == true ? 1 : 0));
+                break;
+            case _1_DIGITAL_WRITE:
+                pin = readInt();
+                value = readInt();
+                digitalWrite(pin, value);
+                break;
+            case _2_ANALOG_READ:
+                pin = readInt();
+                value = analogRead(pin);
+                write(_2_ANALOG_READ);
+                write(pin);
+                write(value);
+                break;
+            case _3_ANALOG_WRITE:
+                pin = readInt();
+                value = readInt();
+                analogWrite(pin, value);
+                break;
+            default:
+                write(_0_ERROR_UNKNOWN_COMMAND);
+                write(command);
+                break;
         }
     }
 

@@ -27,6 +27,13 @@ public class RaspberryPiSocketClient {
         RaspberryPiSocketClient socketClient = new RaspberryPiSocketClient("10.0.0.154", 8000);
         socketClient.addMessage("o 2");
         socketClient.addMessage("w 2 1");
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         socketClient.disconnect();
     }
 
