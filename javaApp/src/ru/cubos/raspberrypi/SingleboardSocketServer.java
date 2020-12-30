@@ -121,17 +121,19 @@ public class SingleboardSocketServer extends ServerSocketDataDecoder {
                     //System.out.println("Read server: " + bytes.toString());
                     String inString = (new String(bytes, StandardCharsets.UTF_8)).substring(0, count);
                     totalIncomeMessage += inString;
-                    System.out.println("Read server: " + inString);
+                    //System.out.println("Read server: " + inString);
+                    executeCommands();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
                 //return;
             }
 
-            //System.out.println("Reader hendler");
+            executeCommands();
 
-            //System.out.println("stringPosition " + stringPosition);
+        }
 
+        void executeCommands(){
             while(totalIncomeMessage.indexOf('\n')!=-1){
                 int stringPosition = totalIncomeMessage.indexOf('\n');
                 String parseMessage = totalIncomeMessage.substring(0, stringPosition);
@@ -139,14 +141,6 @@ public class SingleboardSocketServer extends ServerSocketDataDecoder {
                 decodeString(parseMessage);
                 totalIncomeMessage = totalIncomeMessage.substring(stringPosition + 1, totalIncomeMessage.length());
             }
-            /*
-            boolean contin = true;
-
-            while(contin){
-
-            }
-            */
-
         }
     }
 
