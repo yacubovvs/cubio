@@ -1,5 +1,8 @@
 package ru.cubos.raspberrypi;
 
+import ru.cubos.Connector;
+import ru.cubos.Protocol;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -10,9 +13,10 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.cubos.Protocol.PinModes.*;
 import static ru.cubos.raspberrypi.SingleboardSocketServer.clientBufferSize_max;
 
-public class RaspberryPiSocketClient {
+public class RaspberryPiSocketClient implements Connector {
 
     private static Socket clientSocket;
     private static InputStream in;
@@ -25,16 +29,19 @@ public class RaspberryPiSocketClient {
 
     public static void main(String[] args) {
         RaspberryPiSocketClient socketClient = new RaspberryPiSocketClient("10.0.0.154", 8000);
-        socketClient.addMessage("o 2");
-        socketClient.addMessage("w 2 1");
+        socketClient.run();
+    }
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    void run(){
+        pinMode(2, OUTPUT);
+
+        while (true){
+            digitalWrite(2, 0);
+            delay(1000);
+            digitalWrite(2, 1);
+            delay(1000);
         }
 
-        socketClient.disconnect();
     }
 
     public void addMessage(String message){
@@ -88,6 +95,66 @@ public class RaspberryPiSocketClient {
             return;
         }
 
+    }
+
+    @Override
+    public boolean digitalRead(int pin) {
+        return false;
+    }
+
+    @Override
+    public int analogRead(int pin) {
+        return 0;
+    }
+
+    @Override
+    public void digitalWrite(int pin, Protocol.PinLevels pinLevel) {
+
+    }
+
+    @Override
+    public void setPinInterrupt(int pin) {
+
+    }
+
+    @Override
+    public void clearPinInterrupt(int pin) {
+
+    }
+
+    @Override
+    public void reset() {
+
+    }
+
+    @Override
+    public void analogWrite(int pin, int pinLevel) {
+
+    }
+
+    @Override
+    public void pinMode(int pin, Protocol.PinModes pinMode) {
+
+    }
+
+    @Override
+    public void onError(Exception e, String description) {
+
+    }
+
+    @Override
+    public void onError(Protocol.Error e, String description) {
+
+    }
+
+    @Override
+    public void digitalInterruptReply(int pin, int value, long time) {
+
+    }
+
+    @Override
+    public long millis() {
+        return 0;
     }
 
     private class Reader extends Thread {
