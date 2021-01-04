@@ -7,7 +7,7 @@ import static ru.cubos.Protocol.PinModes.*;
 public class LightSwitch extends SerialConnector {
 
     @Override
-    protected void onBoardStart(){
+    public void onBoardStart(){
 
 
 

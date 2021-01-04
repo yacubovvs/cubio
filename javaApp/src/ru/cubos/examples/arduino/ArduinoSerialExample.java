@@ -9,21 +9,26 @@ public class ArduinoSerialExample {
     public static void main(String[] args) throws SerialPortException {
         LightSwitch lightSwitch = new LightSwitch(){
             @Override
-            protected void onBoardStart(){
+            public void onBoardStart(){
                 System.out.println("On board start");
-                pinMode(10, OUTPUT);
-                pinMode(11, OUTPUT);
-
-                //digitalWrite(3, HIGH);
-                //reset();
-
-                pinMode(9, INPUT_PULLUP);
-                pinMode(8, INPUT_PULLUP);
-
-                setPinInterrupt(9);
-                setPinInterrupt(8);
 
 
+                pinMode(2, INPUT_PULLUP);
+                pinMode(3, INPUT_PULLUP);
+                pinMode(4, INPUT_PULLUP);
+                pinMode(5, INPUT_PULLUP);
+                pinMode(6, INPUT_PULLUP);
+                pinMode(7, INPUT_PULLUP);
+
+                setPinInterrupt(2);
+                setPinInterrupt(3);
+                setPinInterrupt(4);
+                setPinInterrupt(5);
+                setPinInterrupt(6);
+                setPinInterrupt(7);
+
+
+                /*
                 while(true) {
                     digitalWrite(11, 0);
                     digitalWrite(10, 1);
@@ -37,7 +42,7 @@ public class ArduinoSerialExample {
                     digitalWrite(10, 0);
                     digitalWrite(11, 0);
                     delay(1000);
-                }
+                }*/
             }
 
             @Override

@@ -50,6 +50,7 @@
 
 #define _0_ERROR_UNKNOWN_COMMAND              "u"
 
+//#define digitalInteruptsTimeout_enable
 #define digitalInteruptsTimeout     10
 #define digitalInterruptsLength     21    // D0-D13 + A0-A7
 
@@ -92,7 +93,9 @@ long lastCheckDigitalInterrupt;
 void checkDaemons(){
 
   // Interupts
+  #ifdef digitalInteruptsTimeout_enable
   if(abs(millis() - lastCheckDigitalInterrupt)>digitalInteruptsTimeout){
+  #endif
     lastCheckDigitalInterrupt = millis();
 
     for(byte i=0; i<digitalInterruptsLength; i++){
@@ -107,7 +110,9 @@ void checkDaemons(){
         } 
       }
     }  
+  #ifdef digitalInteruptsTimeout_enable
   }
+  #endif
 
   // Modules
   #ifdef MODULE_PWM_PCA9685
