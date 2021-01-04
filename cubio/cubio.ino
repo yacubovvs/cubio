@@ -84,6 +84,12 @@ void setup(){
 void write(String string){
   Serial.print(string + " ");
 }
+
+void write(long string){
+  Serial.print(string);
+  Serial.print(" ");
+}
+
 void write(int string){
   Serial.print(string);
   Serial.print(" ");
