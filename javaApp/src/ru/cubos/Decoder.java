@@ -37,7 +37,8 @@ public class Decoder {
                         digitalInterruptReply(pin, value, time);
                     }else{
                         decode_unknownOperation(s);
-                        break;
+                        //break;
+                        continue;
                     }
 
 
@@ -78,9 +79,16 @@ public class Decoder {
         while(true) {
             if (receivedByteList.size() > 0) {
                 Byte b = receivedByteList.get(0);
+                if(b==null){
+                    receivedByteList.remove(0);
+                    continue;
+                };
                 char c = (char) (b.intValue());
                 receivedByteList.remove(0);
-                if(c==' ') return s;
+                if(c==' '){
+                    //System.out.println(s);
+                    return s;
+                }
                 s += c;
             }else{
                 return null;

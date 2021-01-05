@@ -20,12 +20,20 @@ public class ArduinoSerialExample {
                 pinMode(6, INPUT_PULLUP);
                 pinMode(7, INPUT_PULLUP);
 
+                pinMode(8, INPUT_PULLUP);
+                pinMode(9, INPUT_PULLUP);
+                pinMode(10, INPUT_PULLUP);
+
                 setPinInterrupt(2);
                 setPinInterrupt(3);
                 setPinInterrupt(4);
                 setPinInterrupt(5);
                 setPinInterrupt(6);
                 setPinInterrupt(7);
+
+                setPinInterrupt(8);
+                setPinInterrupt(9);
+                setPinInterrupt(10);
 
 
                 /*

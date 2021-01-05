@@ -113,6 +113,7 @@ void checkDaemons(){
           write((int)i);
           write((int)digitalValue);       
           write((long)millis());
+          Serial.flush();
         } 
       }
     }  
@@ -172,6 +173,7 @@ void loop() {
       write(_0_DIGITAL_READ);
       write(pin);
       write((int)digitalRead(pin));
+      Serial.flush();
   }else if(command==_1_DIGITAL_WRITE){
       int pin = readInt();
       int value = readInt();
@@ -182,6 +184,7 @@ void loop() {
       write(_2_ANALOG_READ);
       write(pin);
       write(value);
+      Serial.flush();
   }else if(command==_3_ANALOG_WRITE){
       int pin = readInt();
       int value = readInt();
@@ -190,6 +193,7 @@ void loop() {
     }else if(command==_MODULE_PWM_PCA9685_STATUS){
       write(_MODULE_PWM_PCA9685_STATUS);
       write((int)getStatus_MODULE_PWM_PCA9685());
+      Serial.flush();
     }else if(command==_MODULE_PWM_PCA9685_STEPPWM){
        int NUM              = readInt();
        int NEW_PWM          = readInt();
@@ -203,6 +207,7 @@ void loop() {
   }else{
       write(_0_ERROR_UNKNOWN_COMMAND);
       write(command);
+      Serial.flush();
   }
 }
 
