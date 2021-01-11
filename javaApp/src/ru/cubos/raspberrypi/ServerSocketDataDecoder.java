@@ -51,9 +51,7 @@ public class ServerSocketDataDecoder extends PiScetcher {
                 break;
             case _0_DIGITAL_READ:
                 pin = readInt();
-                write(_0_DIGITAL_READ);
-                write(pin);
-                write((digitalRead(pin) == true ? 1 : 0));
+                write(_0_DIGITAL_READ + " " + pin + " " + (digitalRead(pin) == true ? "1" : "0") + " ");
                 break;
             case _1_DIGITAL_WRITE:
                 pin = readInt();
@@ -63,9 +61,7 @@ public class ServerSocketDataDecoder extends PiScetcher {
             case _2_ANALOG_READ:
                 pin = readInt();
                 value = analogRead(pin);
-                write(_2_ANALOG_READ);
-                write(pin);
-                write(value);
+                write(_2_ANALOG_READ + " " + pin + " " + value + " ");
                 break;
             case _3_ANALOG_WRITE:
                 pin = readInt();
@@ -83,9 +79,11 @@ public class ServerSocketDataDecoder extends PiScetcher {
         System.out.println("Write to client string " + string);
     }
 
+    /*
     void write(Number number){
         System.out.println("Write to client number " + number);
     }
+    */
 
 
 

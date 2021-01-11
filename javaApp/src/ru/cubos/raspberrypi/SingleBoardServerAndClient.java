@@ -1,5 +1,7 @@
 package ru.cubos.raspberrypi;
 
+import static ru.cubos.Protocol.PinModes.*;
+
 public class SingleBoardServerAndClient {
     public static void main(String[] args) {
 
@@ -19,11 +21,38 @@ public class SingleBoardServerAndClient {
             e.printStackTrace();
         }
 
-        RaspberryPiSocketClient socketClient = new RaspberryPiSocketClient("127.0.0.1", 8000);
-        socketClient.addMessage("test 1000 500 40");
-        socketClient.addMessage("test2 1001 501 41");
+        RaspberryPiSocketClient socketClient = new RaspberryPiSocketClient("127.0.0.1", 8000){
+            @Override
+            void onConnect() {
+                pinMode(2, INPUT);
+                //setPinInterrupt(2);
+                //while(true) {
+                    if (digitalRead(2)) {
+                        System.out.println("2 pin in on");
+                    } else {
+                        System.out.println("2 pin in off");
+                    }
+                //}
+            }
+        };
 
 
+
+
+        /*
+
+
+            if(socketClient.digitalRead(2)){
+                System.out.println("2 pin in on");
+            }else{
+                System.out.println("2 pin in off");
+            }
+            socketClient.delay(100);
+        }
+        */
+
+
+        /*
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
@@ -31,6 +60,7 @@ public class SingleBoardServerAndClient {
         }
 
         socketClient.disconnect();
+        */
 
     }
 }

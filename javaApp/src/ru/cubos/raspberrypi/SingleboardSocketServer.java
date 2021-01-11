@@ -25,11 +25,12 @@ public class SingleboardSocketServer extends ServerSocketDataDecoder {
     private Reader reader;
     private Writer writer;
 
-    public static int clientBufferSize = 2 * 1024 * 1024;
-    public static int serverBufferSize = 1024 * 1024;
 
-    public static int clientBufferSize_max = 2 * 1024 * 1024;
-    public static int serverBufferSize_max = 1024 * 1024;
+    public static int serverBufferSize = 128 * 1024;
+    public static int clientBufferSize = serverBufferSize;
+
+    public static int serverBufferSize_max = serverBufferSize;
+    public static int clientBufferSize_max = serverBufferSize;
 
     public SingleboardSocketServer(int port){
         this.port = port;
@@ -37,12 +38,25 @@ public class SingleboardSocketServer extends ServerSocketDataDecoder {
 
     public void addMessage(byte[] message){
         messagesToSend.add(message);
+        messagesToSend.add("\n".getBytes());
 
         if(writer==null){
             writer = new Writer();
             writer.start();
         }
     }
+
+    public void addMessage(String message){
+        message.trim();
+        message += "\n";
+        messagesToSend.add(message.getBytes());
+
+        if(writer==null){
+            writer = new Writer();
+            writer.start();
+        }
+    }
+
 
     public static void main(String[] args) {
         Thread serverThread = new Thread(new Runnable() {
@@ -142,6 +156,11 @@ public class SingleboardSocketServer extends ServerSocketDataDecoder {
                 totalIncomeMessage = totalIncomeMessage.substring(stringPosition + 1, totalIncomeMessage.length());
             }
         }
+    }
+
+    @Override
+    void write(String string){
+        addMessage(string);
     }
 
     public class Writer extends Thread {
