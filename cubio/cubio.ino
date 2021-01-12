@@ -67,6 +67,49 @@ long command_summ = 0;
 
 int current_byte;
 
+int getPin(int pin){
+  #ifdef ESP8266
+    switch(pin){
+      case 0:
+        return D0;
+      case 1:
+        return D1;
+      case 2:
+        return D2;
+      case 3:
+        return D3;
+      case 4:
+        return D4;
+      case 5:
+        return D5;
+      case 6:
+        return D6;
+      case 7:
+        return D7;
+      case 8:
+        return D8;
+      case 9:
+        return D9;
+      case 10:
+        return D10;
+      case 11:
+        return D11;
+      case 12:
+        return D12;
+      case 13:
+        return D13;
+      case 14:
+        return D14;
+      case 15:
+        return D15;
+      case 16:
+        return A0;
+    }
+  #else
+    return pin;
+  #endif
+}
+
 void setup(){
   for(byte i=0; i<digitalInterruptsLength; i++){
     digitalInterrupt[i*2] = false;
@@ -97,7 +140,6 @@ void write(int string){
 
 long lastCheckDigitalInterrupt;
 void checkDaemons(){
-
   // Interupts
   #ifdef digitalInteruptsTimeout_enable
   if(abs(millis() - lastCheckDigitalInterrupt)>digitalInteruptsTimeout){
@@ -106,7 +148,7 @@ void checkDaemons(){
 
     for(byte i=0; i<digitalInterruptsLength; i++){
       if(digitalInterrupt[i*2]==true){
-        boolean digitalValue = digitalRead(i);
+        boolean digitalValue = digitalRead(getPin(i));
         if(digitalValue!=digitalInterrupt[i*2 + 1]){
           digitalInterrupt[i*2 + 1] = digitalValue;
           write(_4_PIN_INTERRUPT);
@@ -164,7 +206,7 @@ void loop() {
   }else if(command==_3_SET_PIN_INTERRUPT){
       int pin = readInt();
       digitalInterrupt[pin*2] = true;
-      digitalInterrupt[pin*2+1] = digitalRead(pin);
+      digitalInterrupt[pin*2+1] = digitalRead(getPin(pin));
   }else if(command==_4_CLEAR_PIN_INTERRUPT){
       int pin = readInt();
       digitalInterrupt[pin*2] = false;
@@ -172,15 +214,15 @@ void loop() {
       int pin = readInt();
       write(_0_DIGITAL_READ);
       write(pin);
-      write((int)digitalRead(pin));
+      write((int)digitalRead(getPin(pin)));
       Serial.flush();
   }else if(command==_1_DIGITAL_WRITE){
       int pin = readInt();
       int value = readInt();
-      digitalWrite(pin, value);
+      digitalWrite(getPin(pin), value);
   }else if(command==_2_ANALOG_READ){
       int pin = readInt();
-      int value = analogRead(pin);
+      int value = analogRead(getPin(pin));
       write(_2_ANALOG_READ);
       write(pin);
       write(value);
@@ -188,7 +230,7 @@ void loop() {
   }else if(command==_3_ANALOG_WRITE){
       int pin = readInt();
       int value = readInt();
-      analogWrite(pin, value);
+      analogWrite(getPin(pin), value);
   #ifdef MODULE_PWM_PCA9685
     }else if(command==_MODULE_PWM_PCA9685_STATUS){
       write(_MODULE_PWM_PCA9685_STATUS);

@@ -4,7 +4,7 @@ import ru.cubos.arduino.SerialConnector;
 
 import static ru.cubos.Protocol.PinModes.*;
 
-public class LightSwitch extends SerialConnector {
+public class ArduinoSerialConnector extends SerialConnector {
 
     @Override
     public void onBoardStart(){

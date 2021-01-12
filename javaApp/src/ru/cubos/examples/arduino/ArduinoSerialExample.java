@@ -1,19 +1,28 @@
 package ru.cubos.examples.arduino;
 
 import jssc.SerialPortException;
-import ru.cubos.arduino.LightSwitch;
+import ru.cubos.Protocol;
+import ru.cubos.arduino.ArduinoSerialConnector;
 
+import static ru.cubos.Protocol.PinLevels.*;
 import static ru.cubos.Protocol.PinModes.*;
 
 public class ArduinoSerialExample {
     public static void main(String[] args) throws SerialPortException {
-        LightSwitch lightSwitch = new LightSwitch(){
+        ArduinoSerialConnector arduinoSerialConnector = new ArduinoSerialConnector(){
+
+            int ENCODER_PIN = 10;
             @Override
             public void onBoardStart(){
                 System.out.println("On board start");
 
 
-                pinMode(2, INPUT_PULLUP);
+                //pinMode(2, INPUT_PULLUP);
+
+                //setPinInterrupt(7);
+                setPinInterrupt(ENCODER_PIN);
+
+                /*pinMode(2, INPUT);
                 pinMode(3, INPUT_PULLUP);
                 pinMode(4, INPUT_PULLUP);
                 pinMode(5, INPUT_PULLUP);
@@ -35,7 +44,16 @@ public class ArduinoSerialExample {
                 setPinInterrupt(9);
                 setPinInterrupt(10);
 
+                while(true) {
+                    if(digitalRead(2)==HIGH){
+                        System.out.println("ON");
+                    }else{
+                        System.out.println("OFF");
+                    }
 
+                    delay(500);
+                }
+                    */
                 /*
                 while(true) {
                     digitalWrite(11, 0);
@@ -53,14 +71,25 @@ public class ArduinoSerialExample {
                 }*/
             }
 
+            int encoder_count = 0;
+            long lastTime = 0;
             @Override
             public void digitalInterruptReply(int pin, int value, long time){
-                System.out.println(" - Digital interrupt pin " + pin + " - " + value + " on time " + time);
+
+                if(pin==ENCODER_PIN){
+                    if(lastTime<=0){
+                        lastTime = time;
+                        return;
+                    }
+                    encoder_count = 0;
+                    System.out.println(time - lastTime);
+                    lastTime = time;
+                }
             }
 
         };
-        //lightSwitch.setPort("COM13");
-        lightSwitch.setPort("/dev/ttyUSB0");
-        lightSwitch.connect();
+        arduinoSerialConnector.setPort("COM13");
+        arduinoSerialConnector.connect();
+
     }
 }

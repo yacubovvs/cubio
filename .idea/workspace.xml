@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="030a4acb-71cc-45b8-a455-e15021275cf6" name="Default Changelist" comment="" />
+    <list default="true" id="030a4acb-71cc-45b8-a455-e15021275cf6" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -25,6 +27,14 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
   </component>
+  <component name="RunManager">
+    <configuration name="Raspberry Server and Client" type="Application" factoryName="Application">
+      <module name="cubio" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -39,9 +49,17 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state x="443" y="173" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1605703442422">
+    <state x="443" y="173" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1610357833794">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="443" y="173" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1605703442422" />
+    <state x="443" y="173" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1610357833794" />
+    <state x="718" y="302" key="#com.intellij.ide.util.TreeClassChooserDialog" timestamp="1610357832912">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="718" y="302" key="#com.intellij.ide.util.TreeClassChooserDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1610357832912" />
+    <state x="808" y="408" key="#com.intellij.ide.util.projectWizard.JdkChooserPanel.MyDialog" timestamp="1610357114103">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="808" y="408" key="#com.intellij.ide.util.projectWizard.JdkChooserPanel.MyDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1610357114103" />
   </component>
 </project>
