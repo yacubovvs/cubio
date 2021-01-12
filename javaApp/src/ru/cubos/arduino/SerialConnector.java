@@ -11,6 +11,7 @@ import ru.cubos.Protocol;
 import java.util.HashMap;
 
 import static ru.cubos.Protocol.*;
+import static ru.cubos.Protocol.PinLevels.*;
 
 public class SerialConnector extends Decoder implements Connector {
 
@@ -67,12 +68,12 @@ public class SerialConnector extends Decoder implements Connector {
 
     public void digitalWrite(int pin,  int pinLevel){
         if(pinLevel>=1) digitalWrite(pin, PinLevels.HIGH);
-        else digitalWrite(pin, PinLevels.LOW);
+        else digitalWrite(pin, LOW);
     }
 
     public void digitalWrite(int pin,  boolean pinLevel){
         if(pinLevel) digitalWrite(pin, PinLevels.HIGH);
-        else digitalWrite(pin, PinLevels.LOW);
+        else digitalWrite(pin, LOW);
     }
 
     public void write(String s){
@@ -89,7 +90,7 @@ public class SerialConnector extends Decoder implements Connector {
         write("" + i);
     }
 
-    public boolean digitalRead(int pin){
+    public PinLevels digitalRead(int pin){
         write(_0_DIGITAL_READ);
         write(pin);
 
@@ -101,8 +102,8 @@ public class SerialConnector extends Decoder implements Connector {
             if(resultWaiter.get(pin)!=null){
                 int result = resultWaiter.get(pin);
                 resultWaiter.remove(pin);
-                if(result<1)return false;
-                else return true;
+                if(result<1)return LOW;
+                else return HIGH;
             }
 
             try {
@@ -113,7 +114,7 @@ public class SerialConnector extends Decoder implements Connector {
 
             if(System.currentTimeMillis() - timer>timeout){
                 onError(Protocol.Error.NO_READ_ANSWER, "No read answer");
-                return false;
+                return NO_ANSWER;
             }
         }
     }
@@ -218,6 +219,11 @@ public class SerialConnector extends Decoder implements Connector {
 
     @Override
     public void digitalInterruptReply(int pin, int value, long time) {
+
+    }
+
+    @Override
+    public void digitalInterruptReply(int pin, PinLevels value, long time) {
 
     }
 

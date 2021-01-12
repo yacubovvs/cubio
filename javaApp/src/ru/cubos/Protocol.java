@@ -27,7 +27,9 @@ public class Protocol {
 
     public enum PinLevels{
         HIGH,
-        LOW
+        LOW,
+        UNKNOWN,
+        NO_ANSWER
     }
 
     public enum Error{

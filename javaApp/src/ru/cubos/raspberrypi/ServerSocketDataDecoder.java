@@ -3,6 +3,7 @@ package ru.cubos.raspberrypi;
 import ru.cubos.PiScetcher;
 
 import static ru.cubos.Protocol.*;
+import static ru.cubos.Protocol.PinLevels.*;
 import static ru.cubos.Protocol.PinModes.*;
 
 public class ServerSocketDataDecoder extends PiScetcher {
@@ -51,7 +52,7 @@ public class ServerSocketDataDecoder extends PiScetcher {
                 break;
             case _0_DIGITAL_READ:
                 pin = readInt();
-                write(_0_DIGITAL_READ + " " + pin + " " + (digitalRead(pin) == true ? "1" : "0") + " ");
+                write(_0_DIGITAL_READ + " " + pin + " " + (digitalRead(pin) == HIGH ? "1" : "0") + " ");
                 break;
             case _1_DIGITAL_WRITE:
                 pin = readInt();
@@ -122,5 +123,13 @@ public class ServerSocketDataDecoder extends PiScetcher {
         }
         if(position+1<decoderMessage.length()) decoderMessage = decoderMessage.substring(position+1, decoderMessage.length());
         return parametr;
+    }
+
+    @Override
+    public void digitalInterruptReply(int pin, int value, long time) {
+        //digitalInterruptReply(pin, (value==0?LOW:HIGH), time);
+        String message = _4_PIN_INTERRUPT + " " + pin + " " + value + " " + time;
+        write(message);
+        return;
     }
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static ru.cubos.Protocol.*;
+import static ru.cubos.Protocol.PinLevels.*;
 
 public class Decoder {
 
@@ -39,6 +40,7 @@ public class Decoder {
                         decode_unknownOperation(s);
                         //break;
                         continue;
+
                     }
 
 
@@ -66,7 +68,8 @@ public class Decoder {
 
     long readLong(){
         try {
-            long value = Long.parseLong(readString());
+            String parseString = readString();
+            long value = Long.parseLong(parseString);
             return value;
         }catch (Exception ex){
             return -1;
@@ -85,13 +88,19 @@ public class Decoder {
                 };
                 char c = (char) (b.intValue());
                 receivedByteList.remove(0);
-                if(c==' '){
+                if(c==' ' || c=='\n'){
                     //System.out.println(s);
                     return s;
                 }
                 s += c;
             }else{
-                return null;
+
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                continue;
             }
         }
     }
@@ -117,6 +126,10 @@ public class Decoder {
     }
 
     protected void digitalInterruptReply(int pin, int value, long time){
-        System.out.println("digitaInterruptReply " + pin + " - " + value);
+        digitalInterruptReply(pin, (value==0?LOW:HIGH), time);
+    }
+
+    protected void digitalInterruptReply(int pin, Protocol.PinLevels value, long time){
+        return;
     }
 }

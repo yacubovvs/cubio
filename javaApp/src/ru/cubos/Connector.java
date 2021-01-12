@@ -1,7 +1,5 @@
 package ru.cubos;
 
-import ru.cubos.Protocol;
-
 import static ru.cubos.Protocol.*;
 
 public interface Connector {
@@ -21,7 +19,7 @@ public interface Connector {
         if(pinLevel) digitalWrite(pin, Protocol.PinLevels.HIGH);
         else digitalWrite(pin, Protocol.PinLevels.LOW);
     };
-    boolean digitalRead(int pin);
+    PinLevels digitalRead(int pin);
     int analogRead(int pin);
     void digitalWrite(int pin,  PinLevels pinLevel);
     void setPinInterrupt(int pin);
@@ -32,5 +30,8 @@ public interface Connector {
     void onError(Exception e, String description);
     void onError(Protocol.Error e, String description);
     void digitalInterruptReply(int pin, int value, long time);
+
+    void digitalInterruptReply(int pin, PinLevels value, long time);
+
     long millis();
 }

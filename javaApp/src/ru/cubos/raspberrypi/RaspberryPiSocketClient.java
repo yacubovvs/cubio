@@ -66,8 +66,11 @@ public abstract class RaspberryPiSocketClient extends Decoder implements Connect
     }
 
 
+    long appStartMillis;
 
     public RaspberryPiSocketClient(final String addr, final int port){
+
+        appStartMillis = System.currentTimeMillis();
 
         try {
             //clientSocket = new Socket(addr, port);
@@ -104,7 +107,7 @@ public abstract class RaspberryPiSocketClient extends Decoder implements Connect
 
 
     @Override
-    public boolean digitalRead(int pin) {
+    public PinLevels digitalRead(int pin) {
         addMessage(_0_DIGITAL_READ + " " + pin);
 
         resultWaiter.remove(pin);
@@ -114,8 +117,8 @@ public abstract class RaspberryPiSocketClient extends Decoder implements Connect
             if(resultWaiter.get(pin)!=null){
                 int result = resultWaiter.get(pin);
                 resultWaiter.remove(pin);
-                if(result<1)return false;
-                else return true;
+                if(result<1)return LOW;
+                else return HIGH;
             }
 
             try {
@@ -126,7 +129,7 @@ public abstract class RaspberryPiSocketClient extends Decoder implements Connect
 
             if(System.currentTimeMillis() - timer>timeout){
                 onError(NO_READ_ANSWER, "No read answer");
-                return false;
+                return NO_ANSWER;
             }
         }
     }
@@ -161,27 +164,27 @@ public abstract class RaspberryPiSocketClient extends Decoder implements Connect
 
     @Override
     public void digitalWrite(int pin, Protocol.PinLevels pinLevel) {
-        addMessage(Protocol._1_DIGITAL_WRITE + " " + pin + " " + (pinLevel== HIGH?1:0));
+        addMessage(_1_DIGITAL_WRITE + " " + pin + " " + (pinLevel== HIGH?1:0));
     }
 
     @Override
     public void setPinInterrupt(int pin) {
-
+        addMessage(_3_SET_PIN_INTERRUPT + " " + pin);
     }
 
     @Override
     public void clearPinInterrupt(int pin) {
-
+        addMessage(_4_CLEAR_PIN_INTERRUPT + " " + pin);
     }
 
     @Override
     public void reset() {
-        return;
+        addMessage(_BOARD_RESET);
     }
 
     @Override
     public void analogWrite(int pin, int pinLevel) {
-        return;
+        addMessage(_3_ANALOG_WRITE + " " + pin + " " + pinLevel);
     }
 
     @Override
@@ -201,14 +204,14 @@ public abstract class RaspberryPiSocketClient extends Decoder implements Connect
 
     @Override
     public void onError(Exception e, String description) {
-        System.out.println("Onerror " + description);
+        System.out.println("On Error " + description);
         System.out.println(e);
         return;
     }
 
     @Override
     public void onError(Protocol.Error e, String description) {
-        System.out.println("Onerror " + description);
+        System.out.println("On Error " + description);
         System.out.println(e);
         return;
     }
@@ -225,12 +228,17 @@ public abstract class RaspberryPiSocketClient extends Decoder implements Connect
 
     @Override
     public void digitalInterruptReply(int pin, int value, long time) {
-        return;
+        digitalInterruptReply(pin, (value==0?LOW:HIGH), time);
+    }
+
+    @Override
+    public void digitalInterruptReply(int pin, PinLevels value, long time) {
+
     }
 
     @Override
     public long millis() {
-        return 0;
+        return System.currentTimeMillis() - appStartMillis;
     }
 
     String totalIncomeMessage = "";

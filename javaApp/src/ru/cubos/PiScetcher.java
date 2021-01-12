@@ -1,17 +1,15 @@
 package ru.cubos;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import static ru.cubos.Protocol.PinLevels.*;
 import static ru.cubos.Protocol.PinModes.*;
 
 public class PiScetcher implements Connector {
     static final int INTERRUPT_DAEMON_DELAY_MS = 10;
-    HashMap<Integer, Boolean> interruptDigitalPinsValues = new HashMap<>();
+    HashMap<Integer, Protocol.PinLevels> interruptDigitalPinsValues = new HashMap<>();
     Thread interruptDaemon = null;
 
     long appStartMillis;
@@ -27,14 +25,14 @@ public class PiScetcher implements Connector {
                 while(true){
                     long current_time = millis();
                     // Checking pins interrupt
-                    for(Map.Entry<Integer, Boolean> entry : interruptDigitalPinsValues.entrySet()) {
+                    for(Map.Entry<Integer, Protocol.PinLevels> entry : interruptDigitalPinsValues.entrySet()) {
                         Integer pin = entry.getKey();
-                        Boolean value = entry.getValue();
-                        boolean currentValue = digitalRead(pin);
+                        Protocol.PinLevels value = entry.getValue();
+                        Protocol.PinLevels currentValue = digitalRead(pin);
 
-                        if(currentValue!=value.booleanValue()){
+                        if(currentValue!=value){
                             interruptDigitalPinsValues.put((Integer)pin, currentValue);
-                            digitalInterruptReply(pin, (currentValue?1:0), current_time);
+                            digitalInterruptReply(pin, (currentValue==HIGH?1:0), current_time);
                         }
                     }
                     delay(INTERRUPT_DAEMON_DELAY_MS);
@@ -70,9 +68,9 @@ public class PiScetcher implements Connector {
     }
 
     @Override
-    public boolean digitalRead(int pin) {
-        if(readDataFromFile("/sys/class/gpio/gpio" + pin + "/value").equals("1")) return true;
-        else return false;
+    public Protocol.PinLevels digitalRead(int pin) {
+        if(readDataFromFile("/sys/class/gpio/gpio" + pin + "/value").equals("1")) return HIGH;
+        else return LOW;
     }
 
     @Override
@@ -155,7 +153,12 @@ public class PiScetcher implements Connector {
 
     @Override
     public void digitalInterruptReply(int pin, int value, long time) {
-        System.out.println("Interrupt on pin " + pin + " with level " + value + " in time ms " + time + " ms");
+        digitalInterruptReply(pin, (value==0?LOW:HIGH), time);
+    }
+
+    @Override
+    public void digitalInterruptReply(int pin, Protocol.PinLevels value, long time){
+        return;
     }
 
     @Override
