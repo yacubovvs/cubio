@@ -8,7 +8,24 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 */
 
+
+
+#define WIFI_CONNECT
+
+#define WIFI_CONNECT_SSID       "DIR-615"
+#define WIFI_CONNECT_PASSWORD   "tsdurovo6200"
+
+#ifdef WIFI_CONNECT
+  #include <ESP8266WiFi.h>
+  #define WIFI_CONNECT_SERVER_PORT 8888
+  WiFiServer server(WIFI_CONNECT_SERVER_PORT);
+#endif
+
+#define SERIAL_LOG
+//#define SERIAL_CONNECT
 #define SERIAL_BOUNDRATE 115200
+
+
 
 /*
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -67,6 +84,44 @@ long command_summ = 0;
 
 int current_byte;
 
+void setup(){
+  for(byte i=0; i<digitalInterruptsLength; i++){
+    digitalInterrupt[i*2] = false;
+    digitalInterrupt[i*2+1] = false;
+  }
+
+  #ifdef MODULE_PWM_PCA9685
+    setup_MODULE_PWM_PCA9685();
+  #endif
+  
+  Serial.begin(SERIAL_BOUNDRATE);
+
+  #ifdef WIFI_CONNECT
+    const char* ssid = WIFI_CONNECT_SSID;
+    const char* password = WIFI_CONNECT_PASSWORD;
+
+    WiFi.begin(ssid, password);
+    log("Connecting to ");
+    log(WIFI_CONNECT_SSID);
+    log("\n");
+    while (WiFi.status() != WL_CONNECTED){
+      log(".");
+      delay(1000);
+    }
+    log("\nConnected ");
+    log(WiFi.localIP().toString());
+    log("\n");
+
+    server.begin();
+    server.setNoDelay(true);
+
+    log("Server started\n");
+    
+  #endif
+  
+  write(_BOARD_STARTED);
+}
+
 int getPin(int pin){
   #ifdef ESP8266
     switch(pin){
@@ -110,36 +165,36 @@ int getPin(int pin){
   #endif
 }
 
-void setup(){
-  for(byte i=0; i<digitalInterruptsLength; i++){
-    digitalInterrupt[i*2] = false;
-    digitalInterrupt[i*2+1] = false;
-  }
-
-  #ifdef MODULE_PWM_PCA9685
-    setup_MODULE_PWM_PCA9685();
-  #endif
-  
-  Serial.begin(SERIAL_BOUNDRATE);
-  write(_BOARD_STARTED);
+void log(String string){
+  #ifdef SERIAL_LOG
+    Serial.print(string + " ");
+  #endif  
 }
 
 void write(String string){
-  Serial.print(string + " ");
+  #ifdef SERIAL_CONNECT
+    Serial.print(string + " ");
+  #endif
 }
 
 void write(long string){
-  Serial.print(string);
-  Serial.print(" ");
+  #ifdef SERIAL_CONNECT
+    Serial.print(string);
+    Serial.print(" ");
+  #endif
 }
 
 void write(int string){
-  Serial.print(string);
-  Serial.print(" ");
+  #ifdef SERIAL_CONNECT
+    Serial.print(string);
+    Serial.print(" ");
+  #endif
 }
 
 long lastCheckDigitalInterrupt;
 void checkDaemons(){
+  WdtLoop();
+  
   // Interupts
   #ifdef digitalInteruptsTimeout_enable
   if(abs(millis() - lastCheckDigitalInterrupt)>digitalInteruptsTimeout){
@@ -170,20 +225,56 @@ void checkDaemons(){
   
 }
 
+#ifdef WIFI_CONNECT
+  WiFiClient client;
+#endif
+
 String readWord(){
   String command = "";
-  char charReadValue = 0;
-  while(true){
-     if(Serial.available()){
-        charReadValue = Serial.read();
-        if(charReadValue==32) break;
-        command += (char)charReadValue;
-     }else{
-       checkDaemons();
-     }
-  }
-  checkDaemons();
+  
+  #ifdef SERIAL_CONNECT  
+    char charReadValue = 0;
+    while(true){
+       if(Serial.available()){
+          charReadValue = Serial.read();
+          if(charReadValue==32) break;
+          command += (char)charReadValue;
+       }else{
+         checkDaemons();
+       }
+    }
+    checkDaemons();
+  #endif
+
+  #ifdef WIFI_CONNECT
+    checkDaemons();
+    if(!client)client = server.available();
+    
+    if (client) {
+     
+      if(client.connected()){   
+        checkDaemons();   
+        while(client.available()>0){
+          checkDaemons();
+          WdtLoop();
+          char currentChar = (char)((byte)client.read());
+          if(currentChar==' ' || currentChar=='\n'){
+            break;
+          }
+          command += currentChar;
+         
+        }
+      }
+    }
+
+  #endif
   return command;
+}
+
+void WdtLoop(){
+  #ifdef ESP8266
+    ESP.wdtDisable();
+  #endif
 }
 
 int readInt(){
@@ -193,6 +284,7 @@ int readInt(){
 void(* resetFunc) (void) = 0;
 
 void loop() {
+  
   String command = readWord();
 
   if(command==_BOARD_RESET){

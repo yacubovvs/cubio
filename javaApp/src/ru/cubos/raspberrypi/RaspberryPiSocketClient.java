@@ -37,14 +37,14 @@ public abstract class RaspberryPiSocketClient extends Decoder implements Connect
     public static void main(String[] args) {
         RaspberryPiSocketClient socketClient = new RaspberryPiSocketClient("10.0.0.154", 8000){
             @Override
-            void onConnect() {
+            public void onConnect() {
 
             }
         };
 
     }
 
-    abstract void onConnect();
+    public abstract void onConnect();
 
     public void addMessage(String message){
         message.trim();

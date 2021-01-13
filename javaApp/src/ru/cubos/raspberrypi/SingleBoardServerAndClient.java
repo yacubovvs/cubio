@@ -26,7 +26,7 @@ public class SingleBoardServerAndClient {
 
         RaspberryPiSocketClient socketClient = new RaspberryPiSocketClient("127.0.0.1", 8000){
             @Override
-            void onConnect() {
+            public void onConnect() {
 
                 pinMode(2, OUTPUT);
                 pinMode(3, OUTPUT);
