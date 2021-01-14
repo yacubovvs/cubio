@@ -10,7 +10,10 @@
 
 
 
-#define WIFI_CONNECT
+//#define WIFI_CONNECT
+#define SERIAL_CONNECT
+
+//#define SERIAL_LOG
 
 #define WIFI_CONNECT_SSID       "DIR-615"
 #define WIFI_CONNECT_PASSWORD   "tsdurovo6200"
@@ -21,8 +24,7 @@
   WiFiServer server(WIFI_CONNECT_SERVER_PORT);
 #endif
 
-#define SERIAL_LOG
-//#define SERIAL_CONNECT
+
 #define SERIAL_BOUNDRATE 115200
 
 
@@ -38,6 +40,7 @@
 */
 
 //#define MODULE_PWM_PCA9685
+#define MODULE_COUNTER
 
 /*
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -75,6 +78,10 @@
   #define _MODULE_PWM_PCA9685_STATUS      "m_PCA9685_s"
   #define _MODULE_PWM_PCA9685_STEPPWM     "m_PCA9685_p"
   #define _MODULE_PWM_PCA9685_STARTVALUE  "m_PCA9685_t"
+#endif
+
+#ifdef WIFI_CONNECT
+  WiFiClient client;
 #endif
 
 boolean digitalInterrupt[digitalInterruptsLength*2]; 
@@ -175,6 +182,13 @@ void write(String string){
   #ifdef SERIAL_CONNECT
     Serial.print(string + " ");
   #endif
+
+  #ifdef WIFI_CONNECT
+    log(string);
+    log("\n");
+    client.write((const char *) string.c_str());
+    client.write(" ");
+  #endif
 }
 
 void write(long string){
@@ -182,12 +196,20 @@ void write(long string){
     Serial.print(string);
     Serial.print(" ");
   #endif
+
+  #ifdef WIFI_CONNECT
+    write(String(string));
+  #endif
 }
 
 void write(int string){
   #ifdef SERIAL_CONNECT
     Serial.print(string);
     Serial.print(" ");
+  #endif
+
+  #ifdef WIFI_CONNECT
+    write(String(string));
   #endif
 }
 
@@ -210,7 +232,8 @@ void checkDaemons(){
           write((int)i);
           write((int)digitalValue);       
           write((long)millis());
-          Serial.flush();
+          write("\n");
+          flush();
         } 
       }
     }  
@@ -225,9 +248,15 @@ void checkDaemons(){
   
 }
 
-#ifdef WIFI_CONNECT
-  WiFiClient client;
-#endif
+void flush(){
+  #ifdef SERIAL_CONNECT  
+    Serial.flush();
+  #endif
+
+  #ifdef WIFI_CONNECT
+    client.flush();
+  #endif
+}
 
 String readWord(){
   String command = "";
@@ -247,27 +276,19 @@ String readWord(){
   #endif
 
   #ifdef WIFI_CONNECT
-    checkDaemons();
-    if(!client)client = server.available();
     
-    if (client) {
-     
-      if(client.connected()){   
-        checkDaemons();   
-        while(client.available()>0){
-          checkDaemons();
-          WdtLoop();
-          char currentChar = (char)((byte)client.read());
-          if(currentChar==' ' || currentChar=='\n'){
-            break;
-          }
-          command += currentChar;
-         
-        }
+    while (true) {
+      if(client && client.connected() && client.available()>0){   
+        char currentChar = (char)((byte)client.read());
+        if(currentChar==' ' || currentChar=='\n') break;
+        command += currentChar;
+      }else{
+        if(!client)client = server.available();  
       }
+      checkDaemons();  
     }
-
   #endif
+  
   return command;
 }
 
@@ -287,14 +308,25 @@ void loop() {
   
   String command = readWord();
 
+  /*
+  if(command.length()>0){
+    log("Command found ");
+    log(command);
+    Serial.print(command.length());
+    log("\n");
+  }*/
+
   if(command==_BOARD_RESET){
       resetFunc();
   }else if(command==_0_SET_PIN_MODE_INPUT){
-      pinMode(readInt(), INPUT);
+      int pin = readInt();
+      pinMode(getPin(pin), INPUT);
   }else if(command==_1_SET_PIN_MODE_INPUT_PULLUP){
-      pinMode(readInt(), INPUT_PULLUP);
+      int pin = readInt();
+      pinMode(getPin(pin), INPUT_PULLUP);
   }else if(command==_2_SET_PIN_MODE_OUTPUT){
-      pinMode(readInt(), OUTPUT);
+      int pin = readInt();
+      pinMode(getPin(pin), OUTPUT);
   }else if(command==_3_SET_PIN_INTERRUPT){
       int pin = readInt();
       digitalInterrupt[pin*2] = true;
@@ -307,7 +339,8 @@ void loop() {
       write(_0_DIGITAL_READ);
       write(pin);
       write((int)digitalRead(getPin(pin)));
-      Serial.flush();
+      write("\n");
+      flush();
   }else if(command==_1_DIGITAL_WRITE){
       int pin = readInt();
       int value = readInt();
@@ -318,7 +351,8 @@ void loop() {
       write(_2_ANALOG_READ);
       write(pin);
       write(value);
-      Serial.flush();
+      write("\n");
+      flush();
   }else if(command==_3_ANALOG_WRITE){
       int pin = readInt();
       int value = readInt();
@@ -327,7 +361,8 @@ void loop() {
     }else if(command==_MODULE_PWM_PCA9685_STATUS){
       write(_MODULE_PWM_PCA9685_STATUS);
       write((int)getStatus_MODULE_PWM_PCA9685());
-      Serial.flush();
+      write("\n");
+      flush();
     }else if(command==_MODULE_PWM_PCA9685_STEPPWM){
        int NUM              = readInt();
        int NEW_PWM          = readInt();
@@ -341,7 +376,8 @@ void loop() {
   }else{
       write(_0_ERROR_UNKNOWN_COMMAND);
       write(command);
-      Serial.flush();
+      write("\n");
+      flush();
   }
 }
 

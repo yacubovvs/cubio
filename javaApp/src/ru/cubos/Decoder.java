@@ -40,10 +40,7 @@ public class Decoder {
                         decode_unknownOperation(s);
                         //break;
                         continue;
-
                     }
-
-
                 }else{
                     try {
                         Thread.sleep(10);
@@ -89,10 +86,12 @@ public class Decoder {
                 char c = (char) (b.intValue());
                 receivedByteList.remove(0);
                 if(c==' ' || c=='\n'){
-                    //System.out.println(s);
-                    return s;
+                    s = s.trim();
+                    if(s.length()>0) return s;
+                }else{
+                    s += c;
                 }
-                s += c;
+
             }else{
 
                 try {

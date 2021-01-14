@@ -5,6 +5,8 @@ import ru.cubos.Protocol;
 import ru.cubos.arduino.ArduinoSerialConnector;
 import ru.cubos.raspberrypi.RaspberryPiSocketClient;
 
+import static ru.cubos.Protocol.PinLevels.HIGH;
+import static ru.cubos.Protocol.PinLevels.LOW;
 import static ru.cubos.Protocol.PinModes.INPUT;
 import static ru.cubos.Protocol.PinModes.OUTPUT;
 
@@ -13,15 +15,30 @@ public class ArduinoSocketExample {
         RaspberryPiSocketClient socketClient = new RaspberryPiSocketClient("10.0.0.183", 8888){
             @Override
             public void onConnect() {
-                //setPinInterrupt(2);
-                pinMode(2, OUTPUT);
 
+                pinMode(2, INPUT);
+                setPinInterrupt(2);
+                /*
                 while(true){
-                    digitalWrite(2, 0);
+                    if(digitalRead(2)==HIGH){
+                        System.out.println("ON!");
+                    }else{
+                        System.out.println("OFF!");
+                    }
+
                     delay(1000);
-                    digitalWrite(2, 1);
+                }*/
+
+                /*
+                pinMode(2, OUTPUT);
+                while(true) {
                     delay(1000);
-                }
+                    digitalWrite(2, HIGH);
+                    delay(1000);
+                    digitalWrite(2, LOW);
+                }*/
+
+
 
             }
 

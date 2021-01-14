@@ -11,16 +11,26 @@ public class ArduinoSerialExample {
     public static void main(String[] args) throws SerialPortException {
         ArduinoSerialConnector arduinoSerialConnector = new ArduinoSerialConnector(){
 
-            int ENCODER_PIN = 10;
             @Override
             public void onBoardStart(){
                 System.out.println("On board start");
 
 
-                //pinMode(2, INPUT_PULLUP);
+                pinMode(2, INPUT_PULLUP);
 
                 //setPinInterrupt(7);
-                setPinInterrupt(ENCODER_PIN);
+                //pinMode(2, INPUT);
+                //setPinInterrupt(2);
+
+                while(true){
+                    if(digitalRead(2)==HIGH){
+                        System.out.println("ON!");
+                    }else{
+                        System.out.println("OFF!");
+                    }
+
+                    delay(1000);
+                }
 
                 /*pinMode(2, INPUT);
                 pinMode(3, INPUT_PULLUP);
@@ -76,6 +86,7 @@ public class ArduinoSerialExample {
             @Override
             public void digitalInterruptReply(int pin, int value, long time){
 
+                /*
                 if(pin==ENCODER_PIN){
                     if(lastTime<=0){
                         lastTime = time;
@@ -84,12 +95,13 @@ public class ArduinoSerialExample {
                     encoder_count = 0;
                     System.out.println(time - lastTime);
                     lastTime = time;
-                }
+                }*/
             }
 
         };
         arduinoSerialConnector.setPort("COM13");
         arduinoSerialConnector.connect();
+        arduinoSerialConnector.onBoardStart();
 
     }
 }

@@ -98,18 +98,9 @@
           pwm.setPWM(num, 0, valueToPWM);
           
           pwm_data[num*4] = old_pwn;
-          pwm_data[num*4 + 3] = millis();  
-
-          //Serial.print(valueToPWM);
-          //Serial.println(" Found PWM to change ");
-          //delay(100);
+          pwm_data[num*4 + 3] = millis();
           
-        }else{
-          //Serial.print(iterationPWM);
-          //Serial.println(" iteration is null ");
-          //delay(100);
         }
-        
       }
     }
   }
