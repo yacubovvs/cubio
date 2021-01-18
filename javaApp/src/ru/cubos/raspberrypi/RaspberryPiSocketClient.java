@@ -288,12 +288,15 @@ public abstract class RaspberryPiSocketClient extends Decoder implements Connect
 
     @Override
     public void write(String string) {
+        addMessage(string);
+        /*
+        System.out.println(">> " + string);
         messagesToSend.add(string.trim().getBytes());
 
         if(writer==null){
             writer = new Writer();
             writer.start();
-        }
+        }*/
     }
 
     public class Writer extends Thread {

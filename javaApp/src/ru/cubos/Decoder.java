@@ -49,7 +49,9 @@ public class Decoder {
                             }
                         }
 
-                        if(!isModuleCommand) decode_unknownOperation(s);
+                        if(!isModuleCommand){
+                            decode_unknownOperation(s);
+                        }
 
                         continue;
                     }
@@ -103,7 +105,10 @@ public class Decoder {
                 receivedByteList.remove(0);
                 if(c==' ' || c=='\n'){
                     s = s.trim();
-                    if(s.length()>0) return s;
+                    if(s.length()>0){
+                        //System.out.println("String got " + s);
+                        return s;
+                    }
                 }else{
                     s += c;
                 }

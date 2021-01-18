@@ -10,15 +10,20 @@
 
 
 
-//#define WIFI_CONNECT
-#define SERIAL_CONNECT
+#define WIFI_CONNECT
+//#define SERIAL_CONNECT
 
-//#define SERIAL_LOG
+#define SERIAL_LOG
 
-#define WIFI_CONNECT_SSID       "DIR-615"
-#define WIFI_CONNECT_PASSWORD   "tsdurovo6200"
+
 
 #ifdef WIFI_CONNECT
+  /*
+  #define WIFI_CONNECT_SSID       "DIR-615"
+  #define WIFI_CONNECT_PASSWORD   "tsdurovo6200"
+  */
+  #define WIFI_CONNECT_SSID       "len12-75"
+  #define WIFI_CONNECT_PASSWORD   "doc12345"
   #include <ESP8266WiFi.h>
   #define WIFI_CONNECT_SERVER_PORT 8888
   WiFiServer server(WIFI_CONNECT_SERVER_PORT);
@@ -262,6 +267,8 @@ void checkDaemons(){
       #endif
       
   #ifdef digitalInteruptsTimeout_enable
+    }else{
+      delay(1);  
     }
   #endif
   
@@ -273,7 +280,7 @@ void flush(){
   #endif
 
   #ifdef WIFI_CONNECT
-    client.flush();
+    //client.flush();
   #endif
 }
 
@@ -299,8 +306,10 @@ String readWord(){
     while (true) {
       if(client && client.connected() && client.available()>0){   
         char currentChar = (char)((byte)client.read());
-        if(currentChar==' ' || currentChar=='\n') break;
-        command += currentChar;
+        if(currentChar==' ' || currentChar=='\n'){
+          if(command!="" && command!=" ") break;
+          else command=="";
+        } else command += currentChar;
       }else{
         if(!client)client = server.available();  
       }
@@ -335,10 +344,10 @@ void loop() {
     log("\n");
   }*/
 
-  /*
+  
   if(command==" " || command=="\n"){
       return;
-  }else */
+  }else 
   if(command==_BOARD_RESET){
       resetFunc();
   }else if(command==_0_SET_PIN_MODE_INPUT){
@@ -352,9 +361,10 @@ void loop() {
       pinMode(getPin(pin), OUTPUT);
   }else if(command==_3_SET_PIN_INTERRUPT){
       int pin = readInt();
-      pinMode(getPin(pin), INPUT);
+      //pinMode(getPin(pin), INPUT);
       digitalInterrupt[pin*2] = true;
       digitalInterrupt[pin*2+1] = digitalRead(getPin(pin));
+      log("Setting pin interrupt\n");
   }else if(command==_4_CLEAR_PIN_INTERRUPT){
       int pin = readInt();
       digitalInterrupt[pin*2] = false;
@@ -405,15 +415,29 @@ void loop() {
     }else if(command==_MODULE_COUNTER_RESET){
       resetCounter_MODULE_COUNTER();
     }else if(command==_MODULE_COUNTER_SET_COUNTER){
+      log("Setting pin counter module\n");
+      
       byte      pin             = readInt();
       uint32_t  count_value     = readInt();
       byte      counter_number  = readInt();
 
-      pinMode(getPin(pin), INPUT);
+      log("pin: ");
+      log(String(pin));
+      log(", count: ");
+      log(String(count_value));
+      log(", number: ");
+      log(String(counter_number));
+      log("\n");
+
+      //pinMode(getPin(pin), INPUT);
       setCounter_MODULE_COUNTER(pin, count_value, counter_number);
       
     }else if(command==_MODULE_COUNTER_CLEAR_COUNTER){
+      log("Clear pin counter module\n");
       byte      counter_number  = readInt();
+      log("number: ");
+      log(String(counter_number));
+      log("\n");
 
       clearCounter_MODULE_COUNTER(counter_number);
   #endif

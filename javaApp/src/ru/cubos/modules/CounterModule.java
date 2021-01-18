@@ -24,12 +24,12 @@ public abstract class CounterModule extends Module {
 
     public void setCounter(int pin, int value, int counterNumber){
         connector.write(_MODULE_COUNTER_SET_COUNTER + " " + pin + " " + value + " " + counterNumber + " ");
-        connector.write("\n");
+        //connector.write("\n");
     }
 
     public void clearCounter(int counterNumber){
         connector.write(_MODULE_COUNTER_CLEAR_COUNTER + " " + counterNumber + " ");
-        connector.write("\n");
+        //connector.write("\n");
     }
 
     @Override
