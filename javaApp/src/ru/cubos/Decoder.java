@@ -1,5 +1,7 @@
 package ru.cubos;
 
+import ru.cubos.modules.Module;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +10,7 @@ import static ru.cubos.Protocol.PinLevels.*;
 
 public class Decoder {
 
+    public List<Module> moduleList = new ArrayList<>();
     protected List<Byte> receivedByteList = new ArrayList<>();
 
     public Decoder(){
@@ -37,8 +40,17 @@ public class Decoder {
                         long time = readLong();
                         digitalInterruptReply(pin, value, time);
                     }else{
-                        decode_unknownOperation(s);
-                        //break;
+
+                        boolean isModuleCommand = false;
+                        for(Module module: moduleList){
+                            if(module.decode(s, this)){
+                                isModuleCommand = true;
+                                break;
+                            }
+                        }
+
+                        if(!isModuleCommand) decode_unknownOperation(s);
+
                         continue;
                     }
                 }else{
@@ -54,7 +66,11 @@ public class Decoder {
         decoder.start();
     }
 
-    int readInt(){
+    public void addModule(Module module){
+        moduleList.add(module);
+    }
+
+    public int readInt(){
         try {
             int value = Integer.parseInt(readString());
             return value;
@@ -63,7 +79,7 @@ public class Decoder {
         }
     }
 
-    long readLong(){
+    public long readLong(){
         try {
             String parseString = readString();
             long value = Long.parseLong(parseString);
@@ -74,7 +90,7 @@ public class Decoder {
     }
 
 
-    String readString(){
+    public String readString(){
         String s = "";
         while(true) {
             if (receivedByteList.size() > 0) {

@@ -35,12 +35,14 @@ public abstract class RaspberryPiSocketClient extends Decoder implements Connect
     HashMap<Integer, Integer> resultWaiter = new HashMap<>();
 
     public static void main(String[] args) {
-        RaspberryPiSocketClient socketClient = new RaspberryPiSocketClient("10.0.0.154", 8000){
+        RaspberryPiSocketClient socketClient = new RaspberryPiSocketClient(){
             @Override
             public void onConnect() {
 
             }
         };
+
+        socketClient.connect("10.0.0.154", 8000);
 
     }
 
@@ -68,7 +70,11 @@ public abstract class RaspberryPiSocketClient extends Decoder implements Connect
 
     long appStartMillis;
 
-    public RaspberryPiSocketClient(final String addr, final int port){
+    public RaspberryPiSocketClient(){
+
+    }
+
+    public void connect(final String addr, final int port){
 
         appStartMillis = System.currentTimeMillis();
 
@@ -102,8 +108,6 @@ public abstract class RaspberryPiSocketClient extends Decoder implements Connect
         }
 
     }
-
-
 
 
     @Override
@@ -282,6 +286,15 @@ public abstract class RaspberryPiSocketClient extends Decoder implements Connect
         }
     }
 
+    @Override
+    public void write(String string) {
+        messagesToSend.add(string.trim().getBytes());
+
+        if(writer==null){
+            writer = new Writer();
+            writer.start();
+        }
+    }
 
     public class Writer extends Thread {
 

@@ -158,7 +158,7 @@ public class SingleboardSocketServer extends ServerSocketDataDecoder {
     }
 
     @Override
-    void write(String string){
+    public void write(String string){
         addMessage(string);
     }
 

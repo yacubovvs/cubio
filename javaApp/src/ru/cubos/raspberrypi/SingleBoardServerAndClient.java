@@ -24,7 +24,7 @@ public class SingleBoardServerAndClient {
             e.printStackTrace();
         }
 
-        RaspberryPiSocketClient socketClient = new RaspberryPiSocketClient("127.0.0.1", 8000){
+        RaspberryPiSocketClient socketClient = new RaspberryPiSocketClient(){
             @Override
             public void onConnect() {
 
@@ -83,6 +83,7 @@ public class SingleBoardServerAndClient {
 
         };
 
+        socketClient.connect("127.0.0.1", 8000);
 
 
 

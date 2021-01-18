@@ -162,6 +162,11 @@ public class PiScetcher implements Connector {
     }
 
     @Override
+    public void write(String string) {
+        System.out.println("No protocol write enabled in PiScetcher");
+    }
+
+    @Override
     public long millis() {
         return System.currentTimeMillis() - appStartMillis;
     }

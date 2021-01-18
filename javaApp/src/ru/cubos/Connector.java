@@ -33,5 +33,7 @@ public interface Connector {
 
     void digitalInterruptReply(int pin, PinLevels value, long time);
 
+    void write(String string);
+
     long millis();
 }

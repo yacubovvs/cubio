@@ -3,6 +3,8 @@ package ru.cubos.examples.arduino;
 import jssc.SerialPortException;
 import ru.cubos.Protocol;
 import ru.cubos.arduino.ArduinoSerialConnector;
+import ru.cubos.modules.CounterModule;
+import ru.cubos.modules.Module;
 import ru.cubos.raspberrypi.RaspberryPiSocketClient;
 
 import static ru.cubos.Protocol.PinLevels.HIGH;
@@ -11,34 +13,13 @@ import static ru.cubos.Protocol.PinModes.INPUT;
 import static ru.cubos.Protocol.PinModes.OUTPUT;
 
 public class ArduinoSocketExample {
-    public static void main(String[] args) throws SerialPortException {
-        RaspberryPiSocketClient socketClient = new RaspberryPiSocketClient("10.0.0.183", 8888){
+    public static void main(String[] args){
+        RaspberryPiSocketClient socketClient = new RaspberryPiSocketClient(){
             @Override
             public void onConnect() {
 
                 pinMode(2, INPUT);
                 setPinInterrupt(2);
-                /*
-                while(true){
-                    if(digitalRead(2)==HIGH){
-                        System.out.println("ON!");
-                    }else{
-                        System.out.println("OFF!");
-                    }
-
-                    delay(1000);
-                }*/
-
-                /*
-                pinMode(2, OUTPUT);
-                while(true) {
-                    delay(1000);
-                    digitalWrite(2, HIGH);
-                    delay(1000);
-                    digitalWrite(2, LOW);
-                }*/
-
-
 
             }
 
@@ -48,6 +29,17 @@ public class ArduinoSocketExample {
             }
 
         };
+
+        CounterModule counterModule = new CounterModule(socketClient) {
+            @Override
+            public void onCounterInterrupt(int pin, int counterNumber, long millis) {
+
+            }
+        };
+
+        socketClient.moduleList.add(counterModule);
+        socketClient.connect("10.0.0.183", 8888);
+
 
     }
 }
