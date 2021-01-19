@@ -26,8 +26,7 @@ public class ArduinoSerialExample {
 
                 pinMode(PIN, INPUT_PULLUP);
                 //counterModule.resetCounter();
-                counterModule.setCounter(PIN, 100, 0);
-                //setPinInterrupt(PIN);
+                counterModule.setCounter(PIN, 500, 0);
             }
 
             @Override
@@ -42,7 +41,7 @@ public class ArduinoSerialExample {
         counterModule.setConnector(arduinoSerialConnector);
         arduinoSerialConnector.addModule(counterModule);
         arduinoSerialConnector.connect();
-        arduinoSerialConnector.onBoardStart();
+        //arduinoSerialConnector.onBoardStart();
 
 
     }

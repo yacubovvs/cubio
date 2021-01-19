@@ -10,17 +10,17 @@
 
 
 
-#define WIFI_CONNECT
-//#define SERIAL_CONNECT
+//#define WIFI_CONNECT
+#define SERIAL_CONNECT
 
-#define SERIAL_LOG
+//#define SERIAL_LOG
 
 
 
 #ifdef WIFI_CONNECT
   
-  #define WIFI_CONNECT_SSID       "DIR-615"
-  #define WIFI_CONNECT_PASSWORD   "tsdurovo6200"
+  #define WIFI_CONNECT_SSID       "RLS_WORK"
+  #define WIFI_CONNECT_PASSWORD   "massiveattack"
   
   /*
   #define WIFI_CONNECT_SSID       "len12-75"
