@@ -9,8 +9,7 @@ import ru.cubos.raspberrypi.RaspberryPiSocketClient;
 
 import static ru.cubos.Protocol.PinLevels.HIGH;
 import static ru.cubos.Protocol.PinLevels.LOW;
-import static ru.cubos.Protocol.PinModes.INPUT;
-import static ru.cubos.Protocol.PinModes.OUTPUT;
+import static ru.cubos.Protocol.PinModes.*;
 
 public class ArduinoSocketExample {
     public static void main(String[] args){
@@ -26,17 +25,12 @@ public class ArduinoSocketExample {
             @Override
             public void onConnect() {
 
-                pinMode(2, INPUT);
-                counterModule.setCounter(2, 10, 0);
-                //setPinInterrupt(2);
-                //counterModule.setCounter(2, 10, 0);
+                int PIN = 11;
 
-                delay(2000);
-                counterModule.clearCounter(0);
-                clearPinInterrupt(2);
+                pinMode(PIN, INPUT_PULLUP);
                 //counterModule.resetCounter();
-
-
+                counterModule.setCounter(PIN, 10, 0);
+                //setPinInterrupt(PIN);
 
             }
 
@@ -50,8 +44,8 @@ public class ArduinoSocketExample {
 
         counterModule.setConnector(socketClient);
         socketClient.addModule(counterModule);
-        //socketClient.connect("10.0.0.183", 8888);
-        socketClient.connect("192.168.1.33", 8888);
+        socketClient.connect("10.0.0.193", 8888);
+        //socketClient.connect("192.168.1.33", 8888);
 
 
     }

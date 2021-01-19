@@ -77,7 +77,7 @@ public class SerialConnector extends Decoder implements Connector {
     }
 
     public void write(String s){
-        System.out.println("To write " + s);
+        //System.out.println("To write " + s);
         try {
             serialPort.writeString(s + " ");
             //System.out.print(s + " ");
