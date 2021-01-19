@@ -13,7 +13,7 @@
 #define WIFI_CONNECT
 //#define SERIAL_CONNECT
 
-#define SERIAL_LOG
+//#define SERIAL_LOG
 
 
 
@@ -123,8 +123,14 @@ void setup(){
   #ifdef MODULE_PWM_PCA9685
     setup_MODULE_PWM_PCA9685();
   #endif
+
+  #ifdef SERIAL_CONNECT
+    Serial.begin(SERIAL_BOUNDRATE);
+  #endif
   
-  Serial.begin(SERIAL_BOUNDRATE);
+  #ifdef SERIAL_LOG
+    Serial.begin(SERIAL_BOUNDRATE);
+  #endif
 
   #ifdef WIFI_CONNECT
     const char* ssid = WIFI_CONNECT_SSID;
@@ -152,8 +158,10 @@ void setup(){
   #ifdef MODULE_COUNTER
     setup_MODULE_COUNTER();
   #endif
-  
-  write(_BOARD_STARTED); 
+
+  #ifdef SERIAL_CONNECT
+    write(_BOARD_STARTED); 
+  #endif
 }
 
 int getPin(int pin){
@@ -211,8 +219,8 @@ void write(String string){
   #endif
 
   #ifdef WIFI_CONNECT
-    log(string);
-    log("\n");
+    //log(string);
+    //log("\n");
     client.write((const char *) string.c_str());
     client.write(" ");
   #endif

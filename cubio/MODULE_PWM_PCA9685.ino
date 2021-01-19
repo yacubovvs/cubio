@@ -86,8 +86,7 @@
         
         if( iterationPWM > 0 ){
           if(abs((int)old_pwn - (int)new_pwn)<iterationPWM){
-            old_pwn = new_pwn;
-            //Serial.println("Quick jump");
+            old_pwn = new_pwn;;
           }else if(old_pwn>new_pwn){
             old_pwn -= iterationPWM;
           }else{
