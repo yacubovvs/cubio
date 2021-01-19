@@ -25,12 +25,10 @@ public class ArduinoSocketExample {
             @Override
             public void onConnect() {
 
-                int PIN = 11;
-
-                pinMode(PIN, INPUT_PULLUP);
-                //counterModule.resetCounter();
-                counterModule.setCounter(PIN, 10, 0);
-                //setPinInterrupt(PIN);
+                clearPinInterrupt(2);
+                pinMode(2, INPUT_PULLUP);
+                counterModule.setCounter(2, 100, 0);
+                //setPinInterrupt(2);
 
             }
 

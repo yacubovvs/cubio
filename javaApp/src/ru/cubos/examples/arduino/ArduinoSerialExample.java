@@ -20,13 +20,17 @@ public class ArduinoSerialExample {
 
             @Override
             public void onBoardStart(){
+                delay(1000);
                 System.out.println("On board start");
 
-                int PIN = 11;
+                clearPinInterrupt(2);
+                pinMode(2, INPUT_PULLUP);
+                //setPinInterrupt(2);
 
-                pinMode(PIN, INPUT_PULLUP);
-                //counterModule.resetCounter();
-                counterModule.setCounter(PIN, 500, 0);
+                //pinMode(2, INPUT_PULLUP);
+                //setPinInterrupt(2);
+
+                counterModule.setCounter(2, 1000, 0);
             }
 
             @Override
@@ -36,12 +40,13 @@ public class ArduinoSerialExample {
 
         };
 
-        //arduinoSerialConnector.setPort("COM15");
-        arduinoSerialConnector.setPort("/dev/cu.usbserial-1410");
+        arduinoSerialConnector.setPort("COM13");
+        //arduinoSerialConnector.setPort("/dev/cu.usbserial-1410");
         counterModule.setConnector(arduinoSerialConnector);
         arduinoSerialConnector.addModule(counterModule);
         arduinoSerialConnector.connect();
-        //arduinoSerialConnector.onBoardStart();
+
+        arduinoSerialConnector.onBoardStart();
 
 
     }
