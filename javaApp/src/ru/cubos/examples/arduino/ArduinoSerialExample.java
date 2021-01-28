@@ -20,17 +20,36 @@ public class ArduinoSerialExample {
 
             @Override
             public void onBoardStart(){
-                delay(1000);
-                System.out.println("On board start");
+                clearPinInterrupt(7);
+                //clearPinInterrupt(6);
+                //clearPinInterrupt(5);
+                //clearPinInterrupt(4);
 
-                clearPinInterrupt(2);
-                pinMode(2, INPUT_PULLUP);
-                //setPinInterrupt(2);
+                pinMode(2, INPUT);
+                pinMode(7, INPUT);
+                pinMode(6, INPUT);
+                pinMode(4, INPUT);
 
-                //pinMode(2, INPUT_PULLUP);
-                //setPinInterrupt(2);
+                pinMode(3, OUTPUT);
+                //pinMode(6, INPUT);
+                //pinMode(5, INPUT);
+                //pinMode(4, INPUT);
 
-                counterModule.setCounter(2, 1000, 0);
+
+
+                counterModule.setCounter(2, 300, 0);
+
+                setPinInterrupt(7);
+                setPinInterrupt(6);
+                //setPinInterrupt(5);
+                setPinInterrupt(4);
+
+                while(true){
+                    delay(1000);
+                    digitalWrite(3, HIGH);
+                    delay(1000);
+                    digitalWrite(3, LOW);
+                }
             }
 
             @Override
@@ -40,13 +59,13 @@ public class ArduinoSerialExample {
 
         };
 
-        arduinoSerialConnector.setPort("COM13");
-        //arduinoSerialConnector.setPort("/dev/cu.usbserial-1410");
+        //arduinoSerialConnector.setPort("COM13");
+        arduinoSerialConnector.setPort("/dev/cu.usbserial-1410");
         counterModule.setConnector(arduinoSerialConnector);
         arduinoSerialConnector.addModule(counterModule);
         arduinoSerialConnector.connect();
 
-        arduinoSerialConnector.onBoardStart();
+        //arduinoSerialConnector.onBoardStart();
 
 
     }

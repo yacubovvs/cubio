@@ -10,8 +10,8 @@
 
 
 
-#define WIFI_CONNECT
-//#define SERIAL_CONNECT
+//#define WIFI_CONNECT
+#define SERIAL_CONNECT
 
 //#define SERIAL_LOG
 

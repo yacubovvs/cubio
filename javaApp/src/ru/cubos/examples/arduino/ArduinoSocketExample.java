@@ -35,6 +35,8 @@ public class ArduinoSocketExample {
                 pinMode(7, INPUT);
                 pinMode(6, INPUT);
                 pinMode(4, INPUT);
+
+                pinMode(3, OUTPUT);
                 //pinMode(6, INPUT);
                 //pinMode(5, INPUT);
                 //pinMode(4, INPUT);
@@ -47,6 +49,13 @@ public class ArduinoSocketExample {
                 setPinInterrupt(6);
                 //setPinInterrupt(5);
                 setPinInterrupt(4);
+
+                while(true){
+                    delay(1000);
+                    digitalWrite(3, HIGH);
+                    delay(1000);
+                    digitalWrite(3, LOW);
+                }
 
             }
 
