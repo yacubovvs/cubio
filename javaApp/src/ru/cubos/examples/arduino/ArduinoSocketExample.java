@@ -26,11 +26,27 @@ public class ArduinoSocketExample {
             public void onConnect() {
 
 
-                pinMode(2, INPUT_PULLUP);
+                clearPinInterrupt(7);
+                //clearPinInterrupt(6);
+                //clearPinInterrupt(5);
+                //clearPinInterrupt(4);
 
-                clearPinInterrupt(2);
-                counterModule.setCounter(2, 100, 0);
-                //setPinInterrupt(2);
+                pinMode(2, INPUT);
+                pinMode(7, INPUT);
+                pinMode(6, INPUT);
+                pinMode(4, INPUT);
+                //pinMode(6, INPUT);
+                //pinMode(5, INPUT);
+                //pinMode(4, INPUT);
+
+
+
+                counterModule.setCounter(2, 300, 0);
+
+                setPinInterrupt(7);
+                setPinInterrupt(6);
+                //setPinInterrupt(5);
+                setPinInterrupt(4);
 
             }
 
@@ -41,12 +57,10 @@ public class ArduinoSocketExample {
 
         };
 
-
         counterModule.setConnector(socketClient);
         socketClient.addModule(counterModule);
         socketClient.connect("10.0.0.193", 8888);
         //socketClient.connect("192.168.1.33", 8888);
-
 
     }
 }
