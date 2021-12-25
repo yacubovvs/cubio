@@ -44,7 +44,8 @@
 */
 
 //#define MODULE_PWM_PCA9685
-#define MODULE_COUNTER
+//#define MODULE_COUNTER
+#define MODULE_28DYJ_STEPPER
 
 /*
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -91,6 +92,15 @@
   #define _MODULE_COUNTER_RESET            "MODULE_COUNTER_r"
 #endif
 
+#ifdef MODULE_28DYJ_STEPPER
+  #define _MODULE_28DYJ_STEPPER_ADD_MOTOR       "MODULE_28DYJ_STEPPER_a"
+  #define _MODULE_28DYJ_STEPPER_SET_STEPS       "MODULE_28DYJ_STEPPER_s"
+  #define _MODULE_28DYJ_STEPPER_SET_MAX_STEPS   "MODULE_28DYJ_STEPPER_S"
+  #define _MODULE_28DYJ_STEPPER_IS_MOVING       "MODULE_28DYJ_STEPPER_m"
+  #define _MODULE_28DYJ_STEPPER_SET_STEP_DELAY  "MODULE_28DYJ_STEPPER_S"
+  #define _MODULE_28DYJ_STEPPER_POWEROFF        "MODULE_28DYJ_STEPPER_p"
+#endif
+
 #ifdef WIFI_CONNECT
   WiFiClient client;
 #endif
@@ -114,6 +124,10 @@ void setup(){
 
   #ifdef SERIAL_CONNECT
     Serial.begin(SERIAL_BOUNDRATE);
+  #endif
+
+  #ifdef MODULE_28DYJ_STEPPER
+    setup_MODULE_28DYJ_STEPPER();
   #endif
   
   #ifdef SERIAL_LOG
@@ -272,6 +286,10 @@ void checkDaemons(){
       #ifdef MODULE_COUNTER
         loop_MODULE_MODULE_COUNTER();
       #endif
+
+      #ifdef MODULE_28DYJ_STEPPER
+        loop_MODULE_28DYJ_STEPPER();
+      #endif
       
   #ifdef digitalInteruptsTimeout_enable
     }else{
@@ -336,6 +354,11 @@ void WdtLoop(){
 int readInt(){
   return readWord().toInt();
 }
+
+/*
+long readLong(){
+  return atol(readWord());
+}*/
 
 void(* resetFunc) (void) = 0;
 
@@ -447,6 +470,52 @@ void loop() {
       log("\n");
 
       clearCounter_MODULE_COUNTER(counter_number);
+  #endif
+
+  #ifdef MODULE_28DYJ_STEPPER
+    
+    }else if(command==_MODULE_28DYJ_STEPPER_ADD_MOTOR){
+      byte motor = readInt();
+      byte pin1 = readInt();
+      byte pin2 = readInt();
+      byte pin3 = readInt();
+      byte pin4 = readInt();
+
+      MODULE_28DYJ_STEPPER_addMotor(motor, pin1, pin2, pin3, pin4);
+    
+    }else if(command==_MODULE_28DYJ_STEPPER_SET_MAX_STEPS){
+      byte motor = readInt();
+      byte maxSteps = readInt();
+
+      MODULE_28DYJ_STEPPER_setMaxSteps(motor, maxSteps);
+
+    }else if(command==_MODULE_28DYJ_STEPPER_SET_STEPS){
+      byte motor = readInt();
+      byte steps = readInt();
+      byte direction = readInt();
+      
+      MODULE_28DYJ_STEPPER_setMoveToSteps(motor, steps);
+      MODULE_28DYJ_STEPPER_setDirection(motor, direction);
+      
+    }else if(command==_MODULE_28DYJ_STEPPER_IS_MOVING){
+      byte motor = readInt();
+      bool isMoving = MODULE_28DYJ_STEPPER_isMoving(motor);
+
+      write(_MODULE_28DYJ_STEPPER_IS_MOVING);
+      write(motor);
+      write(isMoving);
+      write("\n");
+      flush();
+
+    }else if(command==_MODULE_28DYJ_STEPPER_SET_STEP_DELAY){
+      byte motor = readInt();
+      byte stepDelay = readInt();
+      MODULE_28DYJ_STEPPER_setStepperDelay(motor, stepDelay);
+
+    }else if(command==_MODULE_28DYJ_STEPPER_POWEROFF){
+      byte motor = readInt();
+      MODULE_28DYJ_STEPPER_poweroff(motor);
+
   #endif
   
   }else{
