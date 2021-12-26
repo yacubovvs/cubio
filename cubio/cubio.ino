@@ -97,7 +97,7 @@
   #define _MODULE_28DYJ_STEPPER_SET_STEPS       "MODULE_28DYJ_STEPPER_s"
   #define _MODULE_28DYJ_STEPPER_SET_MAX_STEPS   "MODULE_28DYJ_STEPPER_S"
   #define _MODULE_28DYJ_STEPPER_IS_MOVING       "MODULE_28DYJ_STEPPER_m"
-  #define _MODULE_28DYJ_STEPPER_SET_STEP_DELAY  "MODULE_28DYJ_STEPPER_S"
+  #define _MODULE_28DYJ_STEPPER_SET_STEP_DELAY  "MODULE_28DYJ_STEPPER_d"
   #define _MODULE_28DYJ_STEPPER_POWEROFF        "MODULE_28DYJ_STEPPER_p"
 #endif
 
@@ -485,14 +485,14 @@ void loop() {
     
     }else if(command==_MODULE_28DYJ_STEPPER_SET_MAX_STEPS){
       byte motor = readInt();
-      byte maxSteps = readInt();
+      uint32_t maxSteps = readInt();
 
       MODULE_28DYJ_STEPPER_setMaxSteps(motor, maxSteps);
 
     }else if(command==_MODULE_28DYJ_STEPPER_SET_STEPS){
       byte motor = readInt();
-      byte steps = readInt();
-      byte direction = readInt();
+      uint32_t steps = readInt();
+      bool direction = readInt();
       
       MODULE_28DYJ_STEPPER_setMoveToSteps(motor, steps);
       MODULE_28DYJ_STEPPER_setDirection(motor, direction);
@@ -509,7 +509,7 @@ void loop() {
 
     }else if(command==_MODULE_28DYJ_STEPPER_SET_STEP_DELAY){
       byte motor = readInt();
-      byte stepDelay = readInt();
+      uint32_t stepDelay = readInt();
       MODULE_28DYJ_STEPPER_setStepperDelay(motor, stepDelay);
 
     }else if(command==_MODULE_28DYJ_STEPPER_POWEROFF){
@@ -517,7 +517,7 @@ void loop() {
       MODULE_28DYJ_STEPPER_poweroff(motor);
 
   #endif
-  
+  }else if(command==" " || command==""){
   }else{
       write(_0_ERROR_UNKNOWN_COMMAND);
       write(command);

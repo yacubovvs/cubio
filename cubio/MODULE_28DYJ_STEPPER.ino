@@ -5,12 +5,12 @@
 
 uint8_t stepers_pins[] = {0,0,0,0};
 bool motorEnable[] = {false};
-long lastStep_time[] = {0};
+uint32_t lastStep_time[] = {0};
 uint32_t step_delay[] = {10000};
 uint8_t currentStep_position[] = {0};
-long currentStep[] = {0};
-long moveToStep[] = {0};
-long maxSteps[] = {2000};
+uint32_t currentStep[] = {0};
+uint32_t moveToStep[] = {0};
+uint32_t maxSteps[] = {2000};
 bool direction[] = {false};
 
 void setup_MODULE_28DYJ_STEPPER(){
@@ -53,12 +53,12 @@ bool MODULE_28DYJ_STEPPER_isMoving(uint8_t motor){
     return direction[motor];
 }
 
-void MODULE_28DYJ_STEPPER_setMoveToSteps(uint8_t motor, long steps){
+void MODULE_28DYJ_STEPPER_setMoveToSteps(uint8_t motor, uint32_t steps){
     steps = steps%maxSteps[motor];
     moveToStep[motor] = steps;
 }
 
-void MODULE_28DYJ_STEPPER_setMaxSteps(uint8_t motor, long steps){
+void MODULE_28DYJ_STEPPER_setMaxSteps(uint8_t motor, uint32_t steps){
     maxSteps[motor] = steps;
 }
 
@@ -81,7 +81,7 @@ void MODULE_28DYJ_STEPPER_addMotor(uint8_t motor, uint8_t pin1, uint8_t pin2, ui
 }
 
 
-void MODULE_28DYJ_STEPPER_setStepperDelay(uint8_t motor, long stepDelay){
+void MODULE_28DYJ_STEPPER_setStepperDelay(uint8_t motor, uint32_t stepDelay){
     step_delay[motor] = stepDelay;
 }
 
